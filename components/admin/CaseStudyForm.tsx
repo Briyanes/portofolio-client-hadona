@@ -1,0 +1,385 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Select } from '@/components/ui/Select';
+import { ImageUpload } from './ImageUpload';
+import { Category, CaseStudyFormData } from '@/lib/types';
+
+interface CaseStudyFormProps {
+  initialData?: Partial<CaseStudyFormData>;
+  categories: Category[];
+  onSubmit: (data: FormData) => Promise<void | { error?: string }>;
+  isSubmitting?: boolean;
+}
+
+export function CaseStudyForm({
+  initialData,
+  categories,
+  onSubmit,
+  isSubmitting = false,
+}: CaseStudyFormProps) {
+  const [slug, setSlug] = useState(initialData?.slug || '');
+  const [metrics, setMetrics] = useState<Array<{ label: string; value: string }>>(
+    initialData?.metrics || []
+  );
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    if (!initialData?.slug) {
+      setSlug(generateSlug(title));
+    }
+  };
+
+  const addMetric = () => {
+    setMetrics([...metrics, { label: '', value: '' }]);
+  };
+
+  const updateMetric = (index: number, field: 'label' | 'value', value: string) => {
+    const updated = [...metrics];
+    updated[index][field] = value;
+    setMetrics(updated);
+  };
+
+  const removeMetric = (index: number) => {
+    setMetrics(metrics.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    // Add metrics as JSON
+    const metricsObj = metrics.reduce((acc, m) => {
+      if (m.label && m.value) {
+        acc[m.label] = m.value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+    formData.append('metrics', JSON.stringify(metricsObj));
+
+    await onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Section 1: Basic Information */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Informasi Dasar</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <Input
+              name="title"
+              label="Judul"
+              defaultValue={initialData?.title}
+              onChange={handleTitleChange}
+              required
+              placeholder="Contoh: Meningkatkan ROAS 8x untuk E-commerce Fashion"
+            />
+          </div>
+
+          <div>
+            <Input
+              name="slug"
+              label="Slug"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              required
+              placeholder="meningkatkan-roas-8x-ecommerce-fashion"
+            />
+          </div>
+
+          <div>
+            <Input
+              name="client_name"
+              label="Nama Klien"
+              defaultValue={initialData?.client_name}
+              required
+              placeholder="PT Fashion Indonesia"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kategori
+            </label>
+            <select
+              name="category_id"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-hadona-primary"
+              defaultValue={initialData?.category_id || ''}
+            >
+              <option value="">Pilih Kategori</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Input
+              name="display_order"
+              label="Urutan Tampilan"
+              type="number"
+              defaultValue={initialData?.display_order || 0}
+              placeholder="0"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 2: Images */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Gambar</h2>
+        <div className="space-y-6">
+          <ImageUpload
+            name="thumbnail"
+            label="Thumbnail"
+            defaultValue={initialData?.thumbnail_url}
+            recommendedSize="1200x630px"
+            required
+          />
+
+          <ImageUpload
+            name="hero_image"
+            label="Hero Image"
+            defaultValue={initialData?.hero_image_url}
+            recommendedSize="1920x1080px"
+          />
+
+          <ImageUpload
+            name="client_logo"
+            label="Logo Klien"
+            defaultValue={initialData?.client_logo_url}
+            recommendedSize="500x500px"
+          />
+        </div>
+      </div>
+
+      {/* Section 3: Content */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Konten</h2>
+        <div className="space-y-4">
+          <Textarea
+            name="challenge"
+            label="Challenge"
+            defaultValue={initialData?.challenge}
+            required
+            rows={5}
+            placeholder="Jelaskan tantangan yang dihadapi klien..."
+          />
+
+          <Textarea
+            name="strategy"
+            label="Strategy"
+            defaultValue={initialData?.strategy}
+            required
+            rows={5}
+            placeholder="Jelaskan strategi yang diterapkan..."
+          />
+
+          <Textarea
+            name="results"
+            label="Results"
+            defaultValue={initialData?.results}
+            required
+            rows={5}
+            placeholder="Jelaskan hasil yang dicapai..."
+          />
+
+          <div className="border-t border-gray-200 pt-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Testimonial (Opsional)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Textarea
+                name="testimonial"
+                label="Isi Testimonial"
+                defaultValue={initialData?.testimonial}
+                rows={3}
+                placeholder="Kata klien tentang hasil kerjasama..."
+              />
+
+              <div className="space-y-4">
+                <Input
+                  name="testimonial_author"
+                  label="Nama Testimoni"
+                  defaultValue={initialData?.testimonial_author}
+                  placeholder="Budi Santoso"
+                />
+                <Input
+                  name="testimonial_position"
+                  label="Posisi/Jabatan"
+                  defaultValue={initialData?.testimonial_position}
+                  placeholder="CEO, PT Fashion Indonesia"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 4: Key Metrics */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900">Key Metrics (Opsional)</h2>
+          <Button type="button" variant="secondary" onClick={addMetric}>
+            + Tambah Metric
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {metrics.map((metric, index) => (
+            <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Input
+                value={metric.label}
+                onChange={(e) => updateMetric(index, 'label', e.target.value)}
+                placeholder="Label (cth: ROAS)"
+              />
+              <Input
+                value={metric.value}
+                onChange={(e) => updateMetric(index, 'value', e.target.value)}
+                placeholder="Value (cth: 8-9x)"
+              />
+              <Button
+                type="button"
+                variant="danger"
+                onClick={() => removeMetric(index)}
+                className="mt-6"
+              >
+                Hapus
+              </Button>
+            </div>
+          ))}
+          {metrics.length === 0 && (
+            <p className="text-gray-500 text-sm">Belum ada metrics. Klik "Tambah Metric" untuk menambah.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Section 5: Additional Information (Quick Info) */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Informasi Tambahan (Quick Info)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="services"
+            label="Layanan"
+            defaultValue={initialData?.services || 'Digital Marketing'}
+            placeholder="Digital Marketing, Social Media Management, dll"
+            required
+          />
+
+          <Input
+            name="website_url"
+            label="Website URL Client"
+            type="url"
+            defaultValue={initialData?.website_url}
+            placeholder="https://example.com"
+          />
+
+          <Input
+            name="instagram_url"
+            label="Instagram URL Client"
+            type="url"
+            defaultValue={initialData?.instagram_url}
+            placeholder="https://instagram.com/username"
+          />
+
+          <Input
+            name="facebook_url"
+            label="Facebook URL Client"
+            type="url"
+            defaultValue={initialData?.facebook_url}
+            placeholder="https://facebook.com/pagename"
+          />
+        </div>
+        <p className="mt-3 text-sm text-gray-500">
+          <i className="bi bi-info-circle mr-1"></i>
+          Field URL bersifat opsional. Jika diisi, akan ditampilkan di Quick Info Section dengan link clickable.
+        </p>
+      </div>
+
+      {/* Section 6: SEO */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">SEO (Opsional)</h2>
+        <div className="space-y-4">
+          <Input
+            name="meta_title"
+            label="Meta Title"
+            defaultValue={initialData?.meta_title}
+            placeholder="Maksimal 60 karakter"
+            maxLength={60}
+          />
+
+          <Textarea
+            name="meta_description"
+            label="Meta Description"
+            defaultValue={initialData?.meta_description}
+            rows={2}
+            placeholder="Maksimal 160 karakter"
+            maxLength={160}
+          />
+
+          <Input
+            name="meta_keywords"
+            label="Meta Keywords"
+            defaultValue={initialData?.meta_keywords?.join(', ')}
+            placeholder="digital marketing, facebook ads, iklan fashion (pisahkan dengan koma)"
+          />
+        </div>
+      </div>
+
+      {/* Section 7: Publishing */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Publishing</h2>
+        <div className="space-y-3">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="is_featured"
+              defaultChecked={initialData?.is_featured}
+              className="w-4 h-4 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
+            />
+            <span className="text-sm font-medium text-gray-700">Tampilkan di Homepage (Featured)</span>
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="is_published"
+              defaultChecked={initialData?.is_published}
+              className="w-4 h-4 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
+            />
+            <span className="text-sm font-medium text-gray-700">Publish (Tampilkan di website publik)</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-3 justify-end">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => window.history.back()}
+        >
+          Batal
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Menyimpan...' : initialData?.title ? 'Update' : 'Simpan'}
+        </Button>
+      </div>
+    </form>
+  );
+}
