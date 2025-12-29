@@ -238,7 +238,7 @@ export async function getCaseStudiesCount() {
     supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }),
     supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', true),
     supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', false),
-    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('featured', true),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_featured', true),
   ]);
 
   return {
