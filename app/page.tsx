@@ -1,124 +1,72 @@
 import { HeroSection } from '@/components/public/HeroSection';
-import { CategoryFilter } from '@/components/public/CategoryFilter';
-import { SearchBar } from '@/components/public/SearchBar';
 import { CTASection } from '@/components/public/CTASection';
-import { CaseStudyCard } from '@/components/public/CaseStudyCard';
-import { getPublishedCaseStudies, getActiveCategories } from '@/lib/supabase-queries';
-
-interface HomePageProps {
-  searchParams: { category?: string; search?: string };
-}
+import { AboutSection } from '@/components/public/AboutSection';
+import { ClientLogosSection } from '@/components/public/ClientLogosSection';
+import { ServicesOverviewSection } from '@/components/public/ServicesOverviewSection';
+import { TestimonialsSection } from '@/components/public/TestimonialsSection';
+import { CaseStudiesSection } from '@/components/public/CaseStudiesSection';
+import {
+  getPublishedCaseStudies,
+  getActiveCategories,
+  getFeaturedTestimonials,
+} from '@/lib/supabase-queries';
+import { AGENCY_INFO, AGENCY_SERVICES } from '@/lib/constants';
+import { getClientLogosFromFolder } from '@/lib/get-client-logos';
 
 // Force dynamic rendering - no caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const caseStudies = await getPublishedCaseStudies({
-    category: searchParams.category,
-    search: searchParams.search,
-  });
+export default async function HomePage() {
+  const [caseStudies, categories, testimonials] = await Promise.all([
+    getPublishedCaseStudies(),
+    getActiveCategories(),
+    getFeaturedTestimonials(10),
+  ]);
 
-  const categories = await getActiveCategories();
+  // Get client logos from static folder
+  const allClientLogos = getClientLogosFromFolder();
+  const clientLogos = allClientLogos.slice(0, 49); // Use all 49 logos
 
   return (
     <main className="min-h-screen">
-      {/* Header Spacer */}
-      <div className="header-spacer" />
+      {/* Header Spacer for fixed header */}
+      <div className="header-spacer"></div>
 
-      {/* Hero Section */}
-      <section className="section-container py-12 md:py-16">
+      {/* 1. Hero Section */}
+      <section className="section-container py-6 md:py-10">
         <HeroSection />
       </section>
 
-      {/* Category Filter */}
-      {categories.length > 0 && (
-        <section id="kategori" className="section-container py-8">
-          <CategoryFilter categories={categories} />
+      {/* 2. Client Logos Section */}
+      {clientLogos.length > 0 && (
+        <section className="section-container py-6 md:py-10">
+          <ClientLogosSection clients={clientLogos} />
         </section>
       )}
 
-      {/* Search Bar */}
-      <section className="section-container pb-8">
-        <SearchBar />
+      {/* 3. About Section */}
+      <section className="section-container py-6 md:py-10">
+        <AboutSection agencyInfo={AGENCY_INFO} />
       </section>
 
-      {/* Case Studies Grid */}
-      <section className="section-container py-8 min-h-[600px]">
-        {/* Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              {searchParams.category
-                ? categories.find((c) => c.slug === searchParams.category)
-                    ?.name || 'Studi Kasus'
-                : 'Semua Studi Kasus'}
-            </h2>
-            <p className="text-gray-600 flex items-center gap-2">
-              <i className="bi bi-collection-play text-hadona-primary"></i>
-              Menampilkan <span className="font-bold text-hadona-primary">{caseStudies.length}</span> studi kasus
-            </p>
-          </div>
-
-          {/* Sort/View Options (visual only for now) */}
-          <div className="hidden md:flex items-center gap-2">
-            <button className="px-4 py-2 rounded-lg bg-hadona-primary text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-              <i className="bi bi-grid-3x3-gap-fill mr-1"></i>
-              Grid
-            </button>
-          </div>
-        </div>
-
-        {/* Cards Grid */}
-        {caseStudies.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {caseStudies.map((caseStudy, index) => (
-              <div
-                key={caseStudy.id}
-                className="animate-fade-in"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  animationFillMode: 'both'
-                }}
-              >
-                <CaseStudyCard caseStudy={caseStudy} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 animate-fade-in">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 mb-6">
-              <i className="bi bi-inbox text-5xl text-gray-400"></i>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              {searchParams.search || searchParams.category
-                ? 'Tidak Ada Hasil Ditemukan'
-                : 'Belum Ada Studi Kasus'}
-            </h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-6">
-              {searchParams.search
-                ? `Tidak ada studi kasus yang cocok dengan pencarian "${searchParams.search}"`
-                : searchParams.category
-                ? 'Belum ada studi kasus untuk kategori ini. Silakan pilih kategori lain.'
-                : 'Belum ada studi kasus yang dipublikasikan. Kunjungi lagi nanti!'}
-            </p>
-            {(searchParams.search || searchParams.category) && (
-              <a
-                href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-hadona-primary text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
-              >
-                <i className="bi bi-arrow-left"></i>
-                Kembali ke Semua Kategori
-              </a>
-            )}
-          </div>
-        )}
+      {/* 4. Services Overview */}
+      <section className="section-container py-6 md:py-10">
+        <ServicesOverviewSection services={AGENCY_SERVICES} columns={3} />
       </section>
 
-      {/* CTA Section */}
-      {caseStudies.length > 0 && (
-        <CTASection variant="home" />
+      {/* 5-7. Category Filter, Search Bar & Case Studies Grid (Client-Side Filtering) */}
+      <CaseStudiesSection caseStudies={caseStudies} categories={categories} />
+
+      {/* 8. Testimonials Section */}
+      {testimonials.length > 0 && (
+        <section className="section-container py-6 md:py-10">
+          <TestimonialsSection testimonials={testimonials} layout="grid" limit={10} />
+        </section>
       )}
+
+      {/* 9. CTA Section */}
+      {caseStudies.length > 0 && <CTASection variant="home" />}
     </main>
   );
 }

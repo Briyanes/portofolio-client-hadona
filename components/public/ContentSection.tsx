@@ -42,8 +42,8 @@ export function ContentSection({ type, content, title }: ContentSectionProps) {
   const config = sectionConfig[type];
 
   return (
-    <section className="mb-16 animate-slide-in-left">
-      <div className={`bg-gradient-to-br ${config.bgGradient} rounded-2xl p-8
+    <section className="mb-10 animate-slide-in-left">
+      <div className={`bg-gradient-to-br ${config.bgGradient} rounded-2xl p-6
                       border-l-4 ${config.borderColor}
                       shadow-lg hover:shadow-xl transition-all duration-300
                       hover:scale-[1.01]`}>

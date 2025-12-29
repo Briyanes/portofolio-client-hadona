@@ -91,64 +91,63 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         ]}
       />
 
-      {/* Quick Info Bar */}
-      <QuickInfoBar caseStudy={caseStudy} />
+      {/* Quick Info Bar - Mobile Horizontal */}
+      <QuickInfoBar caseStudy={caseStudy} variant="horizontal" />
 
-      {/* Hero Section */}
-      <div className="section-container py-12">
-        <CaseStudyHero caseStudy={caseStudy} />
+      {/* Main Content with Sidebar - Desktop */}
+      <div className="section-container py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-8">
+          {/* Left Column - Main Content */}
+          <div className="space-y-8">
+            {/* Hero Section */}
+            <CaseStudyHero caseStudy={caseStudy} />
+
+            {/* Challenge Section */}
+            {caseStudy.challenge && (
+              <ContentSection
+                type="challenge"
+                content={caseStudy.challenge}
+              />
+            )}
+
+            {/* Strategy Section */}
+            {caseStudy.strategy && (
+              <ContentSection
+                type="strategy"
+                content={caseStudy.strategy}
+              />
+            )}
+
+            {/* Results Section */}
+            {caseStudy.results && (
+              <ContentSection
+                type="results"
+                content={caseStudy.results}
+              />
+            )}
+
+            {/* Testimonial */}
+            {caseStudy.testimonial && (
+              <TestimonialCard testimonial={caseStudy} />
+            )}
+
+            {/* Gallery */}
+            {caseStudy.gallery_urls && caseStudy.gallery_urls.length > 0 && (
+              <ImageGallery images={caseStudy.gallery_urls} />
+            )}
+
+            {/* Related Case Studies */}
+            {relatedCaseStudies.length > 0 && (
+              <RelatedCaseStudies caseStudies={relatedCaseStudies} />
+            )}
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div>
+            <QuickInfoBar caseStudy={caseStudy} variant="sidebar" />
+          </div>
+        </div>
       </div>
-
-      {/* Challenge Section */}
-      {caseStudy.challenge && (
-        <div className="section-container">
-          <ContentSection
-            type="challenge"
-            content={caseStudy.challenge}
-          />
-        </div>
-      )}
-
-      {/* Strategy Section */}
-      {caseStudy.strategy && (
-        <div className="section-container">
-          <ContentSection
-            type="strategy"
-            content={caseStudy.strategy}
-          />
-        </div>
-      )}
-
-      {/* Results Section */}
-      {caseStudy.results && (
-        <div className="section-container">
-          <ContentSection
-            type="results"
-            content={caseStudy.results}
-          />
-        </div>
-      )}
-
-      {/* Testimonial */}
-      {caseStudy.testimonial && (
-        <div className="section-container">
-          <TestimonialCard testimonial={caseStudy} />
-        </div>
-      )}
-
-      {/* Gallery */}
-      {caseStudy.gallery_urls && caseStudy.gallery_urls.length > 0 && (
-        <div className="section-container">
-          <ImageGallery images={caseStudy.gallery_urls} />
-        </div>
-      )}
-
-      {/* Related Case Studies */}
-      {relatedCaseStudies.length > 0 && (
-        <div className="section-container">
-          <RelatedCaseStudies caseStudies={relatedCaseStudies} />
-        </div>
-      )}
 
       {/* CTA Section */}
       <CTASection variant="case-study" />

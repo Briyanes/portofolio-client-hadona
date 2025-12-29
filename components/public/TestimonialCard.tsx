@@ -1,4 +1,5 @@
 import type { CaseStudy } from '@/lib/types';
+import { ClientLogo } from './ClientLogo';
 
 interface TestimonialCardProps {
   testimonial: Pick<CaseStudy, 'testimonial' | 'testimonial_author' | 'testimonial_position' | 'client_logo_url'>;
@@ -6,17 +7,6 @@ interface TestimonialCardProps {
 
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
   if (!testimonial.testimonial) return null;
-
-  // Get initials from author name
-  const getInitials = (name?: string | null) => {
-    if (!name) return '??';
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   return (
     <section className="mb-16 animate-scale-in">
@@ -39,20 +29,14 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
 
           {/* Author info */}
           <div className="flex items-center gap-4">
-            {/* Avatar or Initials */}
-            {testimonial.client_logo_url ? (
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-white shadow-md flex-shrink-0">
-                <img
-                  src={testimonial.client_logo_url}
-                  alt={testimonial.testimonial_author || 'Author'}
-                  className="w-full h-full object-contain p-2"
-                />
-              </div>
-            ) : (
-              <div className="w-14 h-14 rounded-full bg-hadona-primary text-white flex items-center justify-center text-xl font-bold flex-shrink-0 shadow-md">
-                {getInitials(testimonial.testimonial_author)}
-              </div>
-            )}
+            {/* Avatar with fallback */}
+            <ClientLogo
+              src={testimonial.client_logo_url}
+              clientName={testimonial.testimonial_author || 'Klien'}
+              size="lg"
+              variant="circle"
+              className="w-14 h-14"
+            />
 
             {/* Author details */}
             <div>

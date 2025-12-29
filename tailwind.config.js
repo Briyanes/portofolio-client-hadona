@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'tablet': '768px',
+        'desktop': '1024px',
+      },
       colors: {
         hadona: {
           primary: '#2B46BB',
@@ -22,6 +26,23 @@ module.exports = {
         '18': '4.5rem',
         '88': '22rem',
         '128': '32rem',
+      },
+      fontSize: {
+        'hero-mobile': ['32px', { lineHeight: '1', letterSpacing: '-0.02em' }],
+        'hero-tablet': ['40px', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
+        'hero-desktop': ['60px', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
+        'h2-mobile': ['24px', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2-tablet': ['28px', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2-desktop': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
+        'h3-mobile': ['20px', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3-tablet': ['22px', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3-desktop': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+        'body-mobile': ['14px', { lineHeight: '1.6' }],
+        'body-tablet': ['16px', { lineHeight: '1.6' }],
+        'body-desktop': ['18px', { lineHeight: '1.6' }],
+        'small-mobile': ['13px', { lineHeight: '1.5' }],
+        'small-tablet': ['14px', { lineHeight: '1.5' }],
+        'small-desktop': ['16px', { lineHeight: '1.5' }],
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

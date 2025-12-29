@@ -1,45 +1,31 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { debounce } from '@/lib/debounce';
 
-export function SearchBar() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [query, setQuery] = useState(searchParams.get('search') || '');
+interface SearchBarProps {
+  onSearchChange?: (query: string) => void;
+}
+
+export function SearchBar({ onSearchChange }: SearchBarProps) {
+  const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
   // Debounced search function
   const debouncedSearch = useMemo(
     () => debounce((value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (value.trim()) {
-        params.set('search', value);
-      } else {
-        params.delete('search');
+      if (onSearchChange) {
+        onSearchChange(value);
       }
-
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }, 300),
-    [searchParams, router, pathname]
+    [onSearchChange]
   );
 
-  // Update URL when query changes
+  // Update parent when query changes
   useEffect(() => {
     debouncedSearch(query);
     return () => debouncedSearch.cancel();
   }, [query, debouncedSearch]);
-
-  // Update input when URL search param changes (e.g., browser back)
-  useEffect(() => {
-    const searchParam = searchParams.get('search') || '';
-    if (searchParam !== query) {
-      setQuery(searchParam);
-    }
-  }, [searchParams]);
 
   const handleClear = () => {
     setQuery('');

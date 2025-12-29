@@ -86,10 +86,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={inter.variable}>
+      <head>
+        <link rel="stylesheet" href="/css/bootstrap-icons-custom.css" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <Header />
-        {/* Spacer for fixed header */}
-        <div className="header-spacer" style={{ height: '140px' }}></div>
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

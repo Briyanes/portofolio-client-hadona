@@ -2,11 +2,26 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['hadona.id', 'portofolio.hadona.id', 'via.placeholder.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'hadona.id',
+      },
+      {
+        protocol: 'https',
+        hostname: 'portofolio.hadona.id',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.hadona.id',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
       },
     ],
     unoptimized: false

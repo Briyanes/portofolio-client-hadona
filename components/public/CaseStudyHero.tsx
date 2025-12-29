@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import type { CaseStudy } from '@/lib/types';
 import { MetricCard } from './MetricCard';
+import { ClientLogo } from './ClientLogo';
 
 interface CaseStudyHeroProps {
   caseStudy: CaseStudy;
@@ -30,18 +31,15 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
       </h1>
 
       {/* Client Logo */}
-      {caseStudy.client_logo_url && (
+      {caseStudy.client_name && (
         <div className="mb-8">
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
-              <Image
-                src={caseStudy.client_logo_url}
-                alt={caseStudy.client_name}
-                width={48}
-                height={48}
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <ClientLogo
+              src={caseStudy.client_logo_url}
+              clientName={caseStudy.client_name}
+              size="md"
+              variant="rounded"
+            />
             <span className="text-lg font-semibold text-gray-900">{caseStudy.client_name}</span>
           </div>
         </div>

@@ -154,3 +154,75 @@ export async function adminGetStatistics() {
     totalCategories,
   };
 }
+
+// AGENCY: Get featured client logos
+export async function getFeaturedClientLogos(limit: number = 12) {
+  const { data, error } = await supabaseAdmin
+    .from('case_studies')
+    .select('client_name, client_logo_url')
+    .eq('is_published', true)
+    .not('client_logo_url', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
+// AGENCY: Get featured testimonials
+export async function getFeaturedTestimonials(limit: number = 6) {
+  const { data, error } = await supabaseAdmin
+    .from('case_studies')
+    .select('id, slug, testimonial, testimonial_author, testimonial_position, client_name, client_logo_url, thumbnail_url')
+    .eq('is_published', true)
+    .not('testimonial', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
+// AGENCY: Get aggregate metrics
+export async function getAgencyMetrics() {
+  const { count: totalCaseStudies } = await supabaseAdmin
+    .from('case_studies')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_published', true);
+
+  const { data: caseStudies } = await supabaseAdmin
+    .from('case_studies')
+    .select('client_name, metrics')
+    .eq('is_published', true);
+
+  const uniqueClients = new Set(caseStudies?.map((cs: any) => cs.client_name)).size;
+
+  // Calculate average ROAS from metrics JSONB
+  let totalROAS = 0;
+  let roasCount = 0;
+
+  caseStudies?.forEach((cs: any) => {
+    if (cs.metrics) {
+      const roas = Object.entries(cs.metrics).find(([key, value]: [string, unknown]) => {
+        if (typeof value !== 'string') return false;
+        return key.toLowerCase().includes('roas') || key.toLowerCase().includes('roi');
+      });
+      if (roas) {
+        const numericValue = parseFloat(String(roas[1]).replace(/[^\d.]/g, ''));
+        if (!isNaN(numericValue)) {
+          totalROAS += numericValue;
+          roasCount++;
+        }
+      }
+    }
+  });
+
+  const avgROAS = roasCount > 0 ? (totalROAS / roasCount).toFixed(1) + 'x' : 'N/A';
+
+  return {
+    totalCaseStudies: totalCaseStudies || 0,
+    totalClients: uniqueClients,
+    avgROAS,
+    yearsExperience: new Date().getFullYear() - 2020,
+  };
+}

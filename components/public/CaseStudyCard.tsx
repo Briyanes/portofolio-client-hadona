@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { CaseStudy } from '@/lib/types';
+import { ClientLogo } from './ClientLogo';
 
 interface CaseStudyCardProps {
   caseStudy: CaseStudy;
@@ -54,31 +55,18 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
       <div className="p-6">
         {/* Client Name */}
         <div className="flex items-center gap-3 mb-4">
-          {caseStudy.client_logo_url ? (
-            <>
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 shadow-inner">
-                <Image
-                  src={caseStudy.client_logo_url}
-                  alt={caseStudy.client_name}
-                  fill
-                  className="object-contain p-2"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Klien</p>
-                <p className="text-sm font-bold text-gray-900 truncate">
-                  {caseStudy.client_name}
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Klien</p>
-              <p className="text-sm font-bold text-gray-900">
-                {caseStudy.client_name}
-              </p>
-            </div>
-          )}
+          <ClientLogo
+            src={caseStudy.client_logo_url}
+            clientName={caseStudy.client_name}
+            size="md"
+            variant="rounded"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Klien</p>
+            <p className="text-sm font-bold text-gray-900 truncate">
+              {caseStudy.client_name}
+            </p>
+          </div>
         </div>
 
         {/* Title */}
