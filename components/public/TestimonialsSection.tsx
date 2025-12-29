@@ -205,8 +205,8 @@ export function TestimonialsSection({
         <div className="absolute inset-y-0 right-0 w-24 slider-fade-right z-10 pointer-events-none"></div>
       </div>
 
-      {/* View All Link */}
-      <div className="text-center mt-12">
+      {/* View All Link - Hidden */}
+      {/* <div className="text-center mt-12">
         <Link
           href="https://hadona.id/testimonials"
           target="_blank"
@@ -219,7 +219,7 @@ export function TestimonialsSection({
           <span>Lihat Semua Testimonial</span>
           <i className="bi bi-box-arrow-up-right text-lg"></i>
         </Link>
-      </div>
+      </div> */}
     </section>
   );
 }

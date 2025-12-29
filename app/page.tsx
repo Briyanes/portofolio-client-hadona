@@ -51,12 +51,12 @@ export default async function HomePage() {
         <HeroSection />
       </section>
 
-      {/* 2. Client Logos Section - Hidden until valid logos are uploaded */}
-      {/* {clientLogos.length > 0 && (
+      {/* 2. Client Logos Section */}
+      {clientLogos.length > 0 && (
         <section className="section-container py-6 md:py-10">
           <ClientLogosSection clients={clientLogos} />
         </section>
-      )} */}
+      )}
 
       {/* 3. About Section */}
       <section className="section-container py-6 md:py-10">
