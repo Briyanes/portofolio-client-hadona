@@ -57,6 +57,30 @@ export interface AdminUser {
   updated_at: string;
 }
 
+export interface Testimonial {
+  id: string;
+  client_name: string;
+  testimonial: string;
+  position: string | null;
+  is_featured: boolean;
+  is_published: boolean;
+  display_order: number;
+  case_study_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientLogo {
+  id: string;
+  name: string;
+  logo_url: string;
+  website_url: string | null;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Form Types
 export interface CaseStudyFormData {
   title: string;
@@ -95,6 +119,24 @@ export interface CategoryFormData {
   color?: string;
   display_order: number;
   is_active: boolean;
+}
+
+export interface TestimonialFormData {
+  client_name: string;
+  testimonial: string;
+  position?: string;
+  is_featured: boolean;
+  is_published: boolean;
+  display_order: number;
+  case_study_id?: string;
+}
+
+export interface ClientLogoFormData {
+  name: string;
+  logo_url: string;
+  website_url?: string;
+  is_active: boolean;
+  display_order: number;
 }
 
 export interface LoginFormData {

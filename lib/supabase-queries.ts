@@ -1,5 +1,5 @@
 import { supabaseAdmin } from './supabase-admin';
-import type { CaseStudy, Category, AdminUser, CaseStudyFilters } from './types';
+import type { CaseStudy, Category, AdminUser, CaseStudyFilters, Testimonial, ClientLogo } from './types';
 
 // Get all published case studies with filters
 export async function getPublishedCaseStudies(filters: CaseStudyFilters = {}) {
@@ -247,4 +247,101 @@ export async function getCaseStudiesCount() {
     draft: draftResult.count || 0,
     featured: featuredResult.count || 0,
   };
+}
+
+// ==================== TESTIMONIALS ====================
+
+// Get published testimonials
+export async function getPublishedTestimonials(limit?: number) {
+  let query = supabaseAdmin
+    .from('testimonials')
+    .select('*')
+    .eq('is_published', true)
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data as Testimonial[];
+}
+
+// Get featured testimonials from testimonials table
+export async function getFeaturedTestimonialsFromDB(limit: number = 10) {
+  const { data, error } = await supabaseAdmin
+    .from('testimonials')
+    .select('*')
+    .eq('is_published', true)
+    .eq('is_featured', true)
+    .order('display_order', { ascending: true })
+    .limit(limit);
+
+  if (error) throw error;
+  return data as Testimonial[];
+}
+
+// ADMIN: Get all testimonials
+export async function adminGetAllTestimonials() {
+  const { data, error } = await supabaseAdmin
+    .from('testimonials')
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as Testimonial[];
+}
+
+// ADMIN: Get testimonial by ID
+export async function adminGetTestimonialById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('testimonials')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as Testimonial;
+}
+
+// ==================== CLIENT LOGOS ====================
+
+// Get active client logos
+export async function getActiveClientLogos() {
+  const { data, error } = await supabaseAdmin
+    .from('client_logos')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  if (error) throw error;
+  return data as ClientLogo[];
+}
+
+// ADMIN: Get all client logos
+export async function adminGetAllClientLogos() {
+  const { data, error } = await supabaseAdmin
+    .from('client_logos')
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as ClientLogo[];
+}
+
+// ADMIN: Get client logo by ID
+export async function adminGetClientLogoById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('client_logos')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as ClientLogo[];
 }
