@@ -343,5 +343,5 @@ export async function adminGetClientLogoById(id: string) {
     .single();
 
   if (error) throw error;
-  return data as ClientLogo[];
+  return data as ClientLogo;
 }
