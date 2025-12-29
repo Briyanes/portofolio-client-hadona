@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface DeleteTestimonialButtonProps {
@@ -9,7 +9,7 @@ interface DeleteTestimonialButtonProps {
 }
 
 export function DeleteTestimonialButton({ testimonialId, testimonialTitle }: DeleteTestimonialButtonProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const handleDelete = async () => {
@@ -17,34 +17,37 @@ export function DeleteTestimonialButton({ testimonialId, testimonialTitle }: Del
       return;
     }
 
-    setIsDeleting(true);
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/testimonials/${testimonialId}`, {
+          method: 'DELETE',
+        });
 
-    try {
-      const response = await fetch(`/api/testimonials/${testimonialId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to delete testimonial');
-      }
 
-      router.refresh();
-    } catch (error: any) {
-      console.error('Delete error:', error);
-      alert(`Error: ${error.message || 'Gagal menghapus testimoni'}`);
-    } finally {
-      setIsDeleting(false);
-    }
+        if (!response.ok) {
+          alert(`Error: ${result.error || 'Failed to delete testimonial'}`);
+          return;
+        }
+
+        // Success - refresh the page
+        router.refresh();
+      } catch (error: any) {
+        console.error('Delete error:', error);
+        alert(`Error: ${error?.message || 'Failed to delete testimonial'}`);
+      }
+    });
   };
 
   return (
     <button
       onClick={handleDelete}
-      disabled={isDeleting}
-      className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+      disabled={isPending}
+      className={`text-red-600 hover:text-red-800 text-sm font-medium bg-transparent border-0 p-0 ${
+        isPending ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
     >
-      {isDeleting ? 'Menghapus...' : 'Hapus'}
+      {isPending ? 'Menghapus...' : 'Hapus'}
     </button>
   );
 }

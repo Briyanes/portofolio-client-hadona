@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface DeleteClientLogoButtonProps {
@@ -9,7 +9,7 @@ interface DeleteClientLogoButtonProps {
 }
 
 export function DeleteClientLogoButton({ logoId, logoName }: DeleteClientLogoButtonProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const handleDelete = async () => {
@@ -17,34 +17,37 @@ export function DeleteClientLogoButton({ logoId, logoName }: DeleteClientLogoBut
       return;
     }
 
-    setIsDeleting(true);
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/client-logos/${logoId}`, {
+          method: 'DELETE',
+        });
 
-    try {
-      const response = await fetch(`/api/client-logos/${logoId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to delete client logo');
-      }
 
-      router.refresh();
-    } catch (error: any) {
-      console.error('Delete error:', error);
-      alert(`Error: ${error.message || 'Gagal menghapus logo'}`);
-    } finally {
-      setIsDeleting(false);
-    }
+        if (!response.ok) {
+          alert(`Error: ${result.error || 'Failed to delete client logo'}`);
+          return;
+        }
+
+        // Success - refresh the page
+        router.refresh();
+      } catch (error: any) {
+        console.error('Delete error:', error);
+        alert(`Error: ${error?.message || 'Failed to delete client logo'}`);
+      }
+    });
   };
 
   return (
     <button
       onClick={handleDelete}
-      disabled={isDeleting}
-      className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+      disabled={isPending}
+      className={`text-red-600 hover:text-red-800 text-sm font-medium bg-transparent border-0 p-0 ${
+        isPending ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
     >
-      {isDeleting ? 'Menghapus...' : 'Hapus'}
+      {isPending ? 'Menghapus...' : 'Hapus'}
     </button>
   );
 }
