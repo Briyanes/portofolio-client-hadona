@@ -94,16 +94,25 @@ export function ClientLogosSection({
         >
           {duplicatedClients.map((client, index) => {
             // Convert relative path to absolute URL if needed
-            const logoSrc = client.logo_url?.startsWith('/')
-              ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://portofolio.hadona.id'}${client.logo_url}`
-              : client.logo_url;
+            let logoSrc = client.logo_url;
+
+            // Only convert if it's a valid non-empty string
+            if (logoSrc && typeof logoSrc === 'string' && logoSrc.trim() && !logoSrc.startsWith('http')) {
+              if (logoSrc.startsWith('/')) {
+                // Use production URL as default since we're in client component
+                logoSrc = `https://portofolio.hadona.id${logoSrc}`;
+              }
+            }
+
+            // Check if logoSrc is valid
+            const isValidLogo = logoSrc && typeof logoSrc === 'string' && logoSrc.trim() && logoSrc !== '{}' && logoSrc !== 'null';
 
             return (
               <div
                 key={`${client.name}-${index}`}
                 className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
               >
-                {logoSrc ? (
+                {isValidLogo ? (
                   <img
                     src={logoSrc}
                     alt={client.name}
@@ -113,9 +122,9 @@ export function ClientLogosSection({
                       // Hide image and show fallback on error
                       (e.target as HTMLImageElement).style.display = 'none';
                       const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent) {
+                      if (parent && !parent.querySelector('.fallback-text')) {
                         const fallback = document.createElement('div');
-                        fallback.className = 'h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
+                        fallback.className = 'fallback-text h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
                         fallback.textContent = client.name;
                         parent.appendChild(fallback);
                       }
