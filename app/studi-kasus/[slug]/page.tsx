@@ -84,8 +84,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         items={[
           { label: 'Beranda', href: '/' },
           { label: 'Kategori', href: '/' },
-          ...(caseStudy.category
-            ? [{ label: caseStudy.category.name, href: `/?category=${caseStudy.category.slug}` }]
+          ...(caseStudy.categories
+            ? [{ label: caseStudy.categories.name, href: `/?category=${caseStudy.categories.slug}` }]
             : []),
           { label: caseStudy.client_name },
         ]}

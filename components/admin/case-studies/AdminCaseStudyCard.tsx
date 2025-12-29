@@ -60,10 +60,10 @@ export function AdminCaseStudyCard({ caseStudy }: AdminCaseStudyCardProps) {
         </h3>
 
         {/* Category */}
-        {caseStudy.category && (
+        {caseStudy.categories && (
           <div className="flex items-center gap-2 text-xs text-gray-600">
-            <i className={`bi ${caseStudy.category.icon || 'bi-tag'}`}></i>
-            <span>{caseStudy.category.name}</span>
+            <i className={`bi ${caseStudy.categories.icon || 'bi-tag'}`}></i>
+            <span>{caseStudy.categories.name}</span>
           </div>
         )}
 

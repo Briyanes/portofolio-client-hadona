@@ -26,16 +26,16 @@ export function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Category Badge */}
-        {caseStudy.category && (
+        {caseStudy.categories && (
           <div className="absolute top-4 left-4 z-10">
             <span
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white shadow-lg backdrop-blur-sm"
               style={{
-                backgroundColor: `${caseStudy.category.color || '#2B46BB'}dd`,
+                backgroundColor: `${caseStudy.categories.color || '#2B46BB'}dd`,
               }}
             >
-              {caseStudy.category.icon && <i className={`bi ${caseStudy.category.icon}`}></i>}
-              {caseStudy.category.name}
+              {caseStudy.categories.icon && <i className={`bi ${caseStudy.categories.icon}`}></i>}
+              {caseStudy.categories.name}
             </span>
           </div>
         )}

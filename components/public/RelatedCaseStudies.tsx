@@ -38,14 +38,14 @@ export function RelatedCaseStudies({ caseStudies }: RelatedCaseStudiesProps) {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 {/* Category Badge */}
-                {relatedCase.category && (
+                {relatedCase.categories && (
                   <div className="absolute top-3 left-3">
                     <span
                       className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white"
-                      style={{ backgroundColor: relatedCase.category.color || '#2B46BB' }}
+                      style={{ backgroundColor: relatedCase.categories.color || '#2B46BB' }}
                     >
-                      <i className={`bi ${relatedCase.category.icon || 'bi-tag'}`}></i>
-                      {relatedCase.category.name}
+                      <i className={`bi ${relatedCase.categories.icon || 'bi-tag'}`}></i>
+                      {relatedCase.categories.name}
                     </span>
                   </div>
                 )}

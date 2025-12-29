@@ -18,10 +18,10 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
   return (
     <section className="animate-fade-in">
       {/* Category Badge */}
-      {caseStudy.category && (
+      {caseStudy.categories && (
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-hadona-primary/10 text-hadona-primary font-semibold text-sm md:text-base mb-6">
-          <i className={`bi ${caseStudy.category.icon || 'bi-tag'}`}></i>
-          {caseStudy.category.name}
+          <i className={`bi ${caseStudy.categories.icon || 'bi-tag'}`}></i>
+          {caseStudy.categories.name}
         </div>
       )}
 

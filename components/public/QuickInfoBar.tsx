@@ -32,11 +32,11 @@ export function QuickInfoBar({ caseStudy, variant = 'sidebar' }: QuickInfoBarPro
   ];
 
   // Add category card if exists
-  if (caseStudy.category) {
+  if (caseStudy.categories) {
     infoCards.push({
       icon: 'bi-tag',
       label: 'Industry',
-      value: caseStudy.category.name,
+      value: caseStudy.categories.name,
     });
   }
 
