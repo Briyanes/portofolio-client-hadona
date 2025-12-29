@@ -25,8 +25,9 @@ export default async function HomePage() {
     getActiveClientLogos(),
   ]);
 
-  // Debug: Log client logos data
+  // Debug: Log data
   console.log('Client Logos Data:', clientLogos);
+  console.log('Testimonials from DB:', testimonialsFromDB);
 
   // Map testimonials from database to format expected by TestimonialsSection
   const testimonials = testimonialsFromDB.map(t => ({
