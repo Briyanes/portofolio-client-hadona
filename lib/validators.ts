@@ -4,12 +4,6 @@ import { z } from 'zod';
 const optionalField = () =>
   z.string().optional();
 
-// Helper untuk optional URL
-const optionalUrlField = () => z.string().nullable().optional();
-
-// Helper untuk optional array yang bisa berupa array, undefined, atau null
-const optionalArrayField = () => z.array(z.string()).nullable().optional();
-
 // Helper untuk field yang bisa string kosong atau undefined
 const optionalString = () => z.string().optional().transform(val => val === '' ? undefined : val);
 

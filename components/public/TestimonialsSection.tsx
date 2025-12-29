@@ -23,7 +23,6 @@ interface TestimonialsSectionProps {
 
 export function TestimonialsSection({
   testimonials,
-  layout = 'carousel',
   limit = 6,
 }: TestimonialsSectionProps) {
   const [isPaused, setIsPaused] = useState(false);
@@ -36,7 +35,7 @@ export function TestimonialsSection({
   const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
 
   // Drag functionality
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = () => {
     setIsDragging(true);
     setIsPaused(true);
   };
@@ -65,17 +64,6 @@ export function TestimonialsSection({
 
   const handleTouchEnd = () => {
     setIsPaused(false);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!sliderRef.current) return;
-
-    const touch = e.touches[0];
-    const startX = touch.clientX;
-    const currentScroll = sliderRef.current.scrollLeft;
-
-    // Simple horizontal scroll
-    sliderRef.current.scrollLeft = currentScroll;
   };
 
   const getInitials = (name?: string | null) => {
