@@ -18,12 +18,24 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [caseStudies, categories, testimonials, clientLogos] = await Promise.all([
+  const [caseStudies, categories, testimonialsFromDB, clientLogos] = await Promise.all([
     getPublishedCaseStudies(),
     getActiveCategories(),
     getFeaturedTestimonialsFromDB(10),
     getActiveClientLogos(),
   ]);
+
+  // Map testimonials from database to format expected by TestimonialsSection
+  const testimonials = testimonialsFromDB.map(t => ({
+    id: t.id,
+    slug: '', // Standalone testimonials don't have slug
+    testimonial: t.testimonial,
+    testimonial_author: t.client_name,
+    testimonial_position: t.position || null,
+    client_name: t.client_name,
+    client_logo_url: null, // Standalone testimonials don't have logo
+    thumbnail_url: '', // Will use default if needed
+  }));
 
   return (
     <main className="min-h-screen">
