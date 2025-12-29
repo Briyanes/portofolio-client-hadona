@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -122,7 +122,7 @@ export function TestimonialForm({
         <Button
           type="submit"
           disabled={isPending || isSubmitting}
-          loading={isPending}
+          isLoading={isPending}
         >
           {isPending ? 'Menyimpan...' : 'Simpan Testimoni'}
         </Button>
