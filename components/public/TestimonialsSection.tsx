@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef } from 'react';
 
@@ -118,9 +117,8 @@ export function TestimonialsSection({
           style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {duplicatedTestimonials.map((testimonial, index) => (
-            <Link
+            <div
               key={`${testimonial.id}-${index}`}
-              href={`/studi-kasus/${testimonial.slug}`}
               className="group flex-shrink-0 w-[350px] md:w-[400px]"
             >
               <div
@@ -190,14 +188,9 @@ export function TestimonialsSection({
                     <p className="text-xs text-gray-500 truncate mt-0.5">{testimonial.client_name}</p>
                   </div>
 
-                  {/* Arrow icon */}
-                  <div className="text-hadona-primary opacity-0 group-hover:opacity-100
-                                group-hover:translate-x-0 -translate-x-2 transition-all duration-300">
-                    <i className="bi bi-arrow-right text-lg"></i>
-                  </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
