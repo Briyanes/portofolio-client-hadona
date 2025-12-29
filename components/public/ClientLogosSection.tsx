@@ -2,14 +2,10 @@
 
 import Image from 'next/image';
 import { useState, useRef } from 'react';
-
-interface Client {
-  client_name: string;
-  client_logo_url: string;
-}
+import type { ClientLogo } from '@/lib/types';
 
 interface ClientLogosSectionProps {
-  clients: Client[];
+  clients: ClientLogo[];
   showTitle?: boolean;
 }
 
@@ -96,12 +92,12 @@ export function ClientLogosSection({
         >
           {duplicatedClients.map((client, index) => (
             <div
-              key={`${client.client_name}-${index}`}
+              key={`${client.name}-${index}`}
               className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
             >
               <Image
-                src={client.client_logo_url}
-                alt={client.client_name}
+                src={client.logo_url}
+                alt={client.name}
                 width={200}
                 height={100}
                 className="h-16 md:h-20 lg:h-24 w-auto object-contain"
