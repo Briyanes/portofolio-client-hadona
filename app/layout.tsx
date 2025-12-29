@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     template: '%s | Hadona Digital Media',
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
   description:
     'Lihat bagaimana Hadona Digital Media membantu berbagai bisnis mencapai tujuan digital marketing mereka. Studi kasus lengkap dari klien kami.',
