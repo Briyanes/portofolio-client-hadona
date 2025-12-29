@@ -6,6 +6,8 @@ import { CaseStudyForm } from '@/components/admin/CaseStudyForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewCaseStudyPage() {
   const auth = await getAdminUserWithToken();
 

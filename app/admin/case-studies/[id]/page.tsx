@@ -6,6 +6,8 @@ import { updateCaseStudy } from './actions';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditCaseStudyPage({
   params,
 }: {

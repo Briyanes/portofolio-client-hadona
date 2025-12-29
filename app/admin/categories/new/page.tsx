@@ -5,6 +5,8 @@ import { CategoryForm } from '@/components/admin/CategoryForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewCategoryPage() {
   const auth = await getAdminUserWithToken();
 

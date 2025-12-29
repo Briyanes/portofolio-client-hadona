@@ -1,10 +1,20 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+
+export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 import Image from 'next/image';
+
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
 import { loginAction } from '@/lib/actions';
+
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   const router = useRouter();

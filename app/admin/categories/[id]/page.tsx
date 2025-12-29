@@ -6,6 +6,8 @@ import { CategoryForm } from '@/components/admin/CategoryForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditCategoryPage({
   params,
 }: {
@@ -54,8 +56,6 @@ export default async function EditCategoryPage({
         is_active,
       };
 
-      console.log('Updating category with data:', JSON.stringify(data, null, 2));
-
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
       const response = await fetch(`${baseUrl}/api/categories/${params.id}`, {
         method: 'PUT',
@@ -69,7 +69,6 @@ export default async function EditCategoryPage({
 
       if (!response.ok) {
         const result = await response.json();
-        console.error('API Error:', result);
         return { error: result.error || 'Failed to update category' };
       }
 
@@ -80,7 +79,6 @@ export default async function EditCategoryPage({
       // Return success - client will handle redirect
       return { success: true };
     } catch (error: any) {
-      console.error('Update error:', error);
       return { error: error.message || 'Something went wrong' };
     }
   }
