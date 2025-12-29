@@ -4,6 +4,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { ClientLogoForm } from '@/components/admin/ClientLogoForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +25,6 @@ export default async function NewClientLogoPage() {
       return { error: 'Unauthorized' };
     }
 
-    const { accessToken } = auth;
-
     try {
       const name = formData.get('name') as string;
       const logo_url = formData.get('logo_url') as string;
@@ -33,35 +32,30 @@ export default async function NewClientLogoPage() {
       const is_active = formData.get('is_active') === 'on';
       const display_order = parseInt(formData.get('display_order') as string) || 0;
 
-      const data = {
-        name,
-        logo_url,
-        website_url: website_url || '',
-        is_active,
-        display_order,
-      };
+      const { error } = await supabaseAdmin
+        .from('client_logos')
+        .insert({
+          name,
+          logo_url,
+          website_url: website_url || null,
+          is_active,
+          display_order,
+          created_by: auth.user.id,
+          updated_by: auth.user.id,
+        });
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/client-logos`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        cache: 'no-store',
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        return { error: result.error || 'Failed to create client logo' };
+      if (error) {
+        console.error('Supabase insert error:', error);
+        return { error: error.message || 'Failed to create client logo' };
       }
 
       revalidatePath('/admin/client-logos');
       revalidatePath('/admin/client-logos/new');
+      revalidatePath('/');
 
       return { success: true };
     } catch (error: any) {
+      console.error('Create client logo error:', error);
       return { error: error.message || 'Something went wrong' };
     }
   }

@@ -5,6 +5,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { TestimonialForm } from '@/components/admin/TestimonialForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +37,6 @@ export default async function EditTestimonialPage({
         return { error: 'Unauthorized' };
       }
 
-      const { accessToken } = auth;
-
       try {
         const client_name = formData.get('client_name') as string;
         const testimonial_text = formData.get('testimonial') as string;
@@ -46,33 +45,27 @@ export default async function EditTestimonialPage({
         const is_published = formData.get('is_published') === 'on';
         const display_order = parseInt(formData.get('display_order') as string) || 0;
 
-        const data = {
-          client_name,
-          testimonial: testimonial_text,
-          position: position || null,
-          is_featured,
-          is_published,
-          display_order,
-        };
+        const { error } = await supabaseAdmin
+          .from('testimonials')
+          .update({
+            client_name,
+            testimonial: testimonial_text,
+            position: position || null,
+            is_featured,
+            is_published,
+            display_order,
+            updated_by: auth.user.id,
+          })
+          .eq('id', params.id);
 
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const response = await fetch(`${baseUrl}/api/testimonials/${params.id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          cache: 'no-store',
-        });
-
-        if (!response.ok) {
-          const result = await response.json();
-          return { error: result.error || 'Failed to update testimonial' };
+        if (error) {
+          console.error('Supabase update error:', error);
+          return { error: error.message || 'Failed to update testimonial' };
         }
 
         revalidatePath('/admin/testimonials');
         revalidatePath(`/admin/testimonials/${params.id}`);
+        revalidatePath('/');
 
         return { success: true };
       } catch (error: any) {

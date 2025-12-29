@@ -5,6 +5,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { ClientLogoForm } from '@/components/admin/ClientLogoForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +37,6 @@ export default async function EditClientLogoPage({
         return { error: 'Unauthorized' };
       }
 
-      const { accessToken } = auth;
-
       try {
         const name = formData.get('name') as string;
         const logo_url = formData.get('logo_url') as string;
@@ -45,32 +44,26 @@ export default async function EditClientLogoPage({
         const is_active = formData.get('is_active') === 'on';
         const display_order = parseInt(formData.get('display_order') as string) || 0;
 
-        const data = {
-          name,
-          logo_url,
-          website_url: website_url || null,
-          is_active,
-          display_order,
-        };
+        const { error } = await supabaseAdmin
+          .from('client_logos')
+          .update({
+            name,
+            logo_url,
+            website_url: website_url || null,
+            is_active,
+            display_order,
+            updated_by: auth.user.id,
+          })
+          .eq('id', params.id);
 
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const response = await fetch(`${baseUrl}/api/client-logos/${params.id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          cache: 'no-store',
-        });
-
-        if (!response.ok) {
-          const result = await response.json();
-          return { error: result.error || 'Failed to update client logo' };
+        if (error) {
+          console.error('Supabase update error:', error);
+          return { error: error.message || 'Failed to update client logo' };
         }
 
         revalidatePath('/admin/client-logos');
         revalidatePath(`/admin/client-logos/${params.id}`);
+        revalidatePath('/');
 
         return { success: true };
       } catch (error: any) {

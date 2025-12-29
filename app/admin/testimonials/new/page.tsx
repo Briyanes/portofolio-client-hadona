@@ -4,6 +4,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { TestimonialForm } from '@/components/admin/TestimonialForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +25,6 @@ export default async function NewTestimonialPage() {
       return { error: 'Unauthorized' };
     }
 
-    const { accessToken } = auth;
-
     try {
       const client_name = formData.get('client_name') as string;
       const testimonial = formData.get('testimonial') as string;
@@ -34,36 +33,31 @@ export default async function NewTestimonialPage() {
       const is_published = formData.get('is_published') === 'on';
       const display_order = parseInt(formData.get('display_order') as string) || 0;
 
-      const data = {
-        client_name,
-        testimonial,
-        position: position || '',
-        is_featured,
-        is_published,
-        display_order,
-      };
+      const { error } = await supabaseAdmin
+        .from('testimonials')
+        .insert({
+          client_name,
+          testimonial,
+          position: position || null,
+          is_featured,
+          is_published,
+          display_order,
+          created_by: auth.user.id,
+          updated_by: auth.user.id,
+        });
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/testimonials`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        cache: 'no-store',
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        return { error: result.error || 'Failed to create testimonial' };
+      if (error) {
+        console.error('Supabase insert error:', error);
+        return { error: error.message || 'Failed to create testimonial' };
       }
 
       revalidatePath('/admin/testimonials');
       revalidatePath('/admin/testimonials/new');
+      revalidatePath('/');
 
       return { success: true };
     } catch (error: any) {
+      console.error('Create testimonial error:', error);
       return { error: error.message || 'Something went wrong' };
     }
   }
