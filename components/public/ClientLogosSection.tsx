@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useRef } from 'react';
 import type { ClientLogo } from '@/lib/types';
 
@@ -93,30 +92,43 @@ export function ClientLogosSection({
           onMouseEnter={() => !isDragging && setIsPaused(true)}
           style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {duplicatedClients.map((client, index) => (
-            <div
-              key={`${client.name}-${index}`}
-              className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-            >
-              {client.logo_url ? (
-                <Image
-                  src={client.logo_url}
-                  alt={client.name}
-                  width={200}
-                  height={100}
-                  className="h-16 md:h-20 lg:h-24 w-auto object-contain"
-                  unoptimized={true}
-                  onError={(e) => {
-                    console.error('Image load error:', client.name, client.logo_url);
-                  }}
-                />
-              ) : (
-                <div className="h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2">
-                  {client.name}
-                </div>
-              )}
-            </div>
-          ))}
+          {duplicatedClients.map((client, index) => {
+            // Convert relative path to absolute URL if needed
+            const logoSrc = client.logo_url?.startsWith('/')
+              ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://portofolio.hadona.id'}${client.logo_url}`
+              : client.logo_url;
+
+            return (
+              <div
+                key={`${client.name}-${index}`}
+                className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
+              >
+                {logoSrc ? (
+                  <img
+                    src={logoSrc}
+                    alt={client.name}
+                    className="h-16 md:h-20 lg:h-24 w-auto object-contain"
+                    onError={(e) => {
+                      console.error('Image load error:', client.name, logoSrc);
+                      // Hide image and show fallback on error
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      const parent = (e.target as HTMLImageElement).parentElement;
+                      if (parent) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
+                        fallback.textContent = client.name;
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2">
+                    {client.name}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Fade Edge - Right */}
