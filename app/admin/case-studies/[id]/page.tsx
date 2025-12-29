@@ -41,7 +41,7 @@ export default async function EditCaseStudyPage({
           <h1 className="text-2xl font-bold text-gray-900">Edit Studi Kasus</h1>
         </div>
 
-        <div className="max-w-4xl">
+        <div className="w-full">
           <CaseStudyForm
             initialData={{
               title: caseStudy.title,

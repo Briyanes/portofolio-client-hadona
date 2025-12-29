@@ -89,7 +89,7 @@ export default async function NewCategoryPage() {
           <h1 className="text-2xl font-bold text-gray-900">Tambah Kategori Baru</h1>
         </div>
 
-        <div className="max-w-2xl">
+        <div className="w-full">
           <CategoryForm onSubmit={createCategory} />
         </div>
       </div>

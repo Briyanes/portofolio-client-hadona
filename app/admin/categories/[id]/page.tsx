@@ -96,7 +96,7 @@ export default async function EditCategoryPage({
           <h1 className="text-2xl font-bold text-gray-900">Edit Kategori</h1>
         </div>
 
-        <div className="max-w-2xl">
+        <div className="w-full">
           <CategoryForm
             initialData={{
               name: category.name,

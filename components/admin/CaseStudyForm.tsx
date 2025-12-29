@@ -93,7 +93,7 @@ export function CaseStudyForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-6xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-8 w-full">
       {/* Section 1: Basic Information */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Informasi Dasar</h2>
