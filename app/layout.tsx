@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/public/Header';
 import { Footer } from '@/components/public/Footer';
+import PublicLayout from './PublicLayout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -90,9 +91,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/css/bootstrap-icons-custom.css" />
       </head>
       <body className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <PublicLayout>{children}</PublicLayout>
       </body>
     </html>
   );
