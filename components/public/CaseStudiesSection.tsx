@@ -47,7 +47,7 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
 
   // Filter case studies based on selected category and search query
   const filteredCaseStudies = caseStudies.filter((cs) => {
-    const matchesCategory = !selectedCategory || cs.category?.slug === selectedCategory;
+    const matchesCategory = !selectedCategory || cs.categories?.slug === selectedCategory;
     const matchesSearch =
       !searchQuery ||
       cs.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

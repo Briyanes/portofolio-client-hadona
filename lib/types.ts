@@ -18,7 +18,7 @@ export interface CaseStudy {
   client_name: string;
   client_logo_url: string | null;
   category_id: string | null;
-  category?: Category;
+  categories?: Category;
   challenge: string | null;
   strategy: string | null;
   results: string | null;
