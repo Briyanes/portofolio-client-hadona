@@ -21,6 +21,16 @@ const navItems = [
     icon: 'bi-tags',
   },
   {
+    href: '/admin/testimonials',
+    label: 'Testimonials',
+    icon: 'bi-chat-quote',
+  },
+  {
+    href: '/admin/client-logos',
+    label: 'Client Logos',
+    icon: 'bi-badge-ad',
+  },
+  {
     href: '/admin/settings',
     label: 'Settings',
     icon: 'bi-gear',

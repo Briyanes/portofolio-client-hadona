@@ -8,25 +8,22 @@ import { CaseStudiesSection } from '@/components/public/CaseStudiesSection';
 import {
   getPublishedCaseStudies,
   getActiveCategories,
-  getFeaturedTestimonials,
+  getFeaturedTestimonialsFromDB,
+  getActiveClientLogos,
 } from '@/lib/supabase-queries';
 import { AGENCY_INFO, AGENCY_SERVICES } from '@/lib/constants';
-import { getClientLogosFromFolder } from '@/lib/get-client-logos';
 
 // Force dynamic rendering - no caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [caseStudies, categories, testimonials] = await Promise.all([
+  const [caseStudies, categories, testimonials, clientLogos] = await Promise.all([
     getPublishedCaseStudies(),
     getActiveCategories(),
-    getFeaturedTestimonials(10),
+    getFeaturedTestimonialsFromDB(10),
+    getActiveClientLogos(),
   ]);
-
-  // Get client logos from static folder
-  const allClientLogos = getClientLogosFromFolder();
-  const clientLogos = allClientLogos.slice(0, 49); // Use all 49 logos
 
   return (
     <main className="min-h-screen">
