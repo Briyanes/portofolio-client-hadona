@@ -45,7 +45,7 @@ export function ImageUpload({
 
       // Upload to server (will be handled by form submission)
       setIsUploading(false);
-    } catch (err) {
+    } catch {
       setError('Gagal mengupload gambar');
       setIsUploading(false);
     }
@@ -66,6 +66,13 @@ export function ImageUpload({
       {recommendedSize && (
         <p className="text-xs text-gray-500 mb-2">Recommended: {recommendedSize}</p>
       )}
+
+      {/* Hidden input to store the URL value */}
+      <input
+        type="hidden"
+        name={`${name}_url`}
+        value={preview || ''}
+      />
 
       <input
         ref={fileInputRef}

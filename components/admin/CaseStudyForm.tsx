@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
 import { ImageUpload } from './ImageUpload';
 import { Category, CaseStudyFormData } from '@/lib/types';
 
@@ -25,6 +25,8 @@ export function CaseStudyForm({
   const [metrics, setMetrics] = useState<Array<{ label: string; value: string }>>(
     initialData?.metrics || []
   );
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const generateSlug = (title: string) => {
     return title
@@ -58,6 +60,9 @@ export function CaseStudyForm({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    // Add slug (controlled input) to form data
+    formData.set('slug', slug);
+
     // Add metrics as JSON
     const metricsObj = metrics.reduce((acc, m) => {
       if (m.label && m.value) {
@@ -67,11 +72,28 @@ export function CaseStudyForm({
     }, {} as Record<string, string>);
     formData.append('metrics', JSON.stringify(metricsObj));
 
-    await onSubmit(formData);
+    startTransition(async () => {
+      try {
+        const result = await onSubmit(formData);
+
+        // Check if there's an error
+        if (result && 'error' in result && result.error) {
+          alert(`Error: ${result.error}`);
+          return;
+        }
+
+        // Success - redirect to list
+        router.push('/admin/case-studies');
+        router.refresh();
+      } catch (error: any) {
+        console.error('Submit error:', error);
+        alert(`Error: ${error?.message || 'Something went wrong'}`);
+      }
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-6xl mx-auto">
       {/* Section 1: Basic Information */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Informasi Dasar</h2>
@@ -80,7 +102,7 @@ export function CaseStudyForm({
             <Input
               name="title"
               label="Judul"
-              defaultValue={initialData?.title}
+              defaultValue={initialData?.title || ''}
               onChange={handleTitleChange}
               required
               placeholder="Contoh: Meningkatkan ROAS 8x untuk E-commerce Fashion"
@@ -93,7 +115,6 @@ export function CaseStudyForm({
               label="Slug"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              required
               placeholder="meningkatkan-roas-8x-ecommerce-fashion"
             />
           </div>
@@ -102,7 +123,7 @@ export function CaseStudyForm({
             <Input
               name="client_name"
               label="Nama Klien"
-              defaultValue={initialData?.client_name}
+              defaultValue={initialData?.client_name || ''}
               required
               placeholder="PT Fashion Indonesia"
             />
@@ -114,7 +135,6 @@ export function CaseStudyForm({
             </label>
             <select
               name="category_id"
-              required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-hadona-primary"
               defaultValue={initialData?.category_id || ''}
             >
@@ -132,7 +152,7 @@ export function CaseStudyForm({
               name="display_order"
               label="Urutan Tampilan"
               type="number"
-              defaultValue={initialData?.display_order || 0}
+              defaultValue={initialData?.display_order ?? 0}
               placeholder="0"
             />
           </div>
@@ -146,7 +166,7 @@ export function CaseStudyForm({
           <ImageUpload
             name="thumbnail"
             label="Thumbnail"
-            defaultValue={initialData?.thumbnail_url}
+            defaultValue={initialData?.thumbnail_url || ''}
             recommendedSize="1200x630px"
             required
           />
@@ -154,14 +174,14 @@ export function CaseStudyForm({
           <ImageUpload
             name="hero_image"
             label="Hero Image"
-            defaultValue={initialData?.hero_image_url}
+            defaultValue={initialData?.hero_image_url || ''}
             recommendedSize="1920x1080px"
           />
 
           <ImageUpload
             name="client_logo"
             label="Logo Klien"
-            defaultValue={initialData?.client_logo_url}
+            defaultValue={initialData?.client_logo_url || ''}
             recommendedSize="500x500px"
           />
         </div>
@@ -174,8 +194,7 @@ export function CaseStudyForm({
           <Textarea
             name="challenge"
             label="Challenge"
-            defaultValue={initialData?.challenge}
-            required
+            defaultValue={initialData?.challenge || ''}
             rows={5}
             placeholder="Jelaskan tantangan yang dihadapi klien..."
           />
@@ -183,8 +202,7 @@ export function CaseStudyForm({
           <Textarea
             name="strategy"
             label="Strategy"
-            defaultValue={initialData?.strategy}
-            required
+            defaultValue={initialData?.strategy || ''}
             rows={5}
             placeholder="Jelaskan strategi yang diterapkan..."
           />
@@ -192,8 +210,7 @@ export function CaseStudyForm({
           <Textarea
             name="results"
             label="Results"
-            defaultValue={initialData?.results}
-            required
+            defaultValue={initialData?.results || ''}
             rows={5}
             placeholder="Jelaskan hasil yang dicapai..."
           />
@@ -204,7 +221,7 @@ export function CaseStudyForm({
               <Textarea
                 name="testimonial"
                 label="Isi Testimonial"
-                defaultValue={initialData?.testimonial}
+                defaultValue={initialData?.testimonial || ''}
                 rows={3}
                 placeholder="Kata klien tentang hasil kerjasama..."
               />
@@ -213,13 +230,13 @@ export function CaseStudyForm({
                 <Input
                   name="testimonial_author"
                   label="Nama Testimoni"
-                  defaultValue={initialData?.testimonial_author}
+                  defaultValue={initialData?.testimonial_author || ''}
                   placeholder="Budi Santoso"
                 />
                 <Input
                   name="testimonial_position"
                   label="Posisi/Jabatan"
-                  defaultValue={initialData?.testimonial_position}
+                  defaultValue={initialData?.testimonial_position || ''}
                   placeholder="CEO, PT Fashion Indonesia"
                 />
               </div>
@@ -281,7 +298,7 @@ export function CaseStudyForm({
             name="website_url"
             label="Website URL Client"
             type="url"
-            defaultValue={initialData?.website_url}
+            defaultValue={initialData?.website_url || ''}
             placeholder="https://example.com"
           />
 
@@ -289,7 +306,7 @@ export function CaseStudyForm({
             name="instagram_url"
             label="Instagram URL Client"
             type="url"
-            defaultValue={initialData?.instagram_url}
+            defaultValue={initialData?.instagram_url || ''}
             placeholder="https://instagram.com/username"
           />
 
@@ -297,7 +314,7 @@ export function CaseStudyForm({
             name="facebook_url"
             label="Facebook URL Client"
             type="url"
-            defaultValue={initialData?.facebook_url}
+            defaultValue={initialData?.facebook_url || ''}
             placeholder="https://facebook.com/pagename"
           />
         </div>
@@ -314,7 +331,7 @@ export function CaseStudyForm({
           <Input
             name="meta_title"
             label="Meta Title"
-            defaultValue={initialData?.meta_title}
+            defaultValue={initialData?.meta_title || ''}
             placeholder="Maksimal 60 karakter"
             maxLength={60}
           />
@@ -322,7 +339,7 @@ export function CaseStudyForm({
           <Textarea
             name="meta_description"
             label="Meta Description"
-            defaultValue={initialData?.meta_description}
+            defaultValue={initialData?.meta_description || ''}
             rows={2}
             placeholder="Maksimal 160 karakter"
             maxLength={160}
@@ -331,7 +348,7 @@ export function CaseStudyForm({
           <Input
             name="meta_keywords"
             label="Meta Keywords"
-            defaultValue={initialData?.meta_keywords?.join(', ')}
+            defaultValue={initialData?.meta_keywords?.join(', ') || ''}
             placeholder="digital marketing, facebook ads, iklan fashion (pisahkan dengan koma)"
           />
         </div>
@@ -368,16 +385,16 @@ export function CaseStudyForm({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = '/admin/case-studies'}
         >
           Batal
         </Button>
         <Button
           type="submit"
           variant="primary"
-          disabled={isSubmitting}
+          disabled={isPending || isSubmitting}
         >
-          {isSubmitting ? 'Menyimpan...' : initialData?.title ? 'Update' : 'Simpan'}
+          {(isPending || isSubmitting) ? 'Menyimpan...' : initialData?.title ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>

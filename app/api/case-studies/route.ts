@@ -70,50 +70,97 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
 
-    // Extract and validate form data
-    const rawData: any = {
-      title: formData.get('title'),
-      slug: formData.get('slug'),
-      client_name: formData.get('client_name'),
-      category_id: formData.get('category_id'),
-      challenge: formData.get('challenge'),
-      strategy: formData.get('strategy'),
-      results: formData.get('results'),
-      testimonial: formData.get('testimonial') || null,
-      testimonial_author: formData.get('testimonial_author') || null,
-      testimonial_position: formData.get('testimonial_position') || null,
-      metrics: formData.get('metrics') ? JSON.parse(formData.get('metrics') as string) : null,
-      meta_title: formData.get('meta_title') || null,
-      meta_description: formData.get('meta_description') || null,
-      meta_keywords: formData.get('meta_keywords')?.toString().split(',').map((k: string) => k.trim()).filter(Boolean) || null,
-      thumbnail_url: formData.get('thumbnail_url') || null,
-      hero_image_url: formData.get('hero_image_url') || null,
-      client_logo_url: formData.get('client_logo_url') || null,
-      display_order: parseInt(formData.get('display_order') as string) || 0,
-      is_featured: formData.get('is_featured') === 'on',
-      is_published: formData.get('is_published') === 'on',
-      // Quick Info fields
-      website_url: formData.get('website_url') || null,
-      instagram_url: formData.get('instagram_url') || null,
-      facebook_url: formData.get('facebook_url') || null,
-      services: formData.get('services') || '',
+    // Helper untuk mengambil string dari FormData
+    const getString = (key: string): string => {
+      const val = formData.get(key);
+      if (val instanceof File) return '';
+      return val === null || val === undefined ? '' : String(val);
+    };
+
+    // Helper untuk boolean dari FormData
+    const getBoolean = (key: string): boolean => {
+      const val = formData.get(key);
+      return val === 'on' || val === 'true';
+    };
+
+    // Parse metrics JSON
+    let parsedMetrics;
+    const metrics_json = getString('metrics');
+    if (metrics_json && metrics_json.trim() !== '') {
+      try {
+        parsedMetrics = JSON.parse(metrics_json);
+      } catch (e) {
+        parsedMetrics = undefined;
+      }
+    }
+
+    // Parse meta keywords
+    let parsedKeywords;
+    const meta_keywords_str = getString('meta_keywords');
+    if (meta_keywords_str && meta_keywords_str.trim() !== '') {
+      parsedKeywords = meta_keywords_str.split(',').map((k: string) => k.trim()).filter(Boolean);
+    }
+
+    // Parse gallery_urls
+    let gallery_urls;
+    const gallery_urls_str = formData.get('gallery_urls');
+    if (gallery_urls_str && typeof gallery_urls_str === 'string' && gallery_urls_str.trim() !== '') {
+      try {
+        gallery_urls = JSON.parse(gallery_urls_str);
+        if (!Array.isArray(gallery_urls)) {
+          gallery_urls = undefined;
+        }
+      } catch (e) {
+        gallery_urls = undefined;
+      }
+    }
+
+    // Prepare data for validation
+    const rawData = {
+      title: getString('title').trim(),
+      slug: getString('slug').trim(),
+      client_name: getString('client_name').trim(),
+      category_id: getString('category_id').trim(),
+      challenge: getString('challenge').trim(),
+      strategy: getString('strategy').trim(),
+      results: getString('results').trim(),
+      testimonial: getString('testimonial').trim(),
+      testimonial_author: getString('testimonial_author').trim(),
+      testimonial_position: getString('testimonial_position').trim(),
+      metrics: parsedMetrics,
+      meta_title: getString('meta_title').trim(),
+      meta_description: getString('meta_description').trim(),
+      meta_keywords: parsedKeywords,
+      thumbnail_url: getString('thumbnail_url').trim(),
+      hero_image_url: getString('hero_image_url').trim(),
+      client_logo_url: getString('client_logo_url').trim(),
+      gallery_urls: gallery_urls,
+      display_order: parseInt(getString('display_order')) || 0,
+      is_featured: getBoolean('is_featured'),
+      is_published: getBoolean('is_published'),
+      website_url: getString('website_url').trim(),
+      instagram_url: getString('instagram_url').trim(),
+      facebook_url: getString('facebook_url').trim(),
+      services: getString('services').trim(),
     };
 
     // Validate with Zod
     const validatedData = caseStudySchema.parse(rawData);
 
     // Check if slug is unique
-    const { data: existing } = await supabaseAdmin
-      .from('case_studies')
-      .select('id')
-      .eq('slug', validatedData.slug)
-      .single();
+    if (validatedData.slug) {
+      const { data: existing } = await supabaseAdmin
+        .from('case_studies')
+        .select('id')
+        .eq('slug', validatedData.slug)
+        .single();
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Slug already exists' },
-        { status: 400 }
-      );
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Slug already exists' },
+          { status: 400 }
+        );
+      }
     }
 
     // Insert case study
@@ -131,8 +178,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ data: newCaseStudy }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating case study:', error);
-
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
