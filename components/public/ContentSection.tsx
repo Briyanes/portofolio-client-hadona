@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 type SectionType = 'challenge' | 'strategy' | 'results';
 
 interface ContentSectionProps {
@@ -49,24 +47,24 @@ export function ContentSection({ type, content, title }: ContentSectionProps) {
                       hover:scale-[1.01]`}>
         <div className="flex items-center gap-4 mb-6">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center
+            className="w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center
                        bg-white shadow-lg hover:scale-110
                        transition-transform duration-300"
           >
-            <i className={`bi ${config.icon} text-3xl`} style={{ color: config.iconColor }}></i>
+            <i className={`bi ${config.icon} text-2xl md:text-3xl`} style={{ color: config.iconColor }}></i>
           </div>
           <div>
             <p className={`text-sm font-bold ${config.labelColor} uppercase tracking-wide`}>
               {config.label}
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
               {title || config.title}
             </h2>
           </div>
         </div>
 
         <div className="prose prose-lg max-w-none mt-6">
-          <p className="text-gray-700 whitespace-pre-line leading-relaxed text-lg">
+          <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base md:text-lg">
             {content}
           </p>
         </div>

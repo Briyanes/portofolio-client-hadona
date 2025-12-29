@@ -27,7 +27,7 @@ export default function LoginPage() {
       if (result.error) {
         setError(result.error);
       } else if (result.success) {
-        router.push(result.redirectTo || '/admin/dashboard');
+        router.push(result.redirectTo || '/admin');
         router.refresh();
       }
     });
@@ -98,20 +98,24 @@ export default function LoginPage() {
               {isPending ? 'Memproses...' : 'Masuk'}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <Link
-              href="/"
-              className="text-sm text-gray-600 hover:text-hadona-primary transition-colors"
-            >
-              ← Kembali ke Website
-            </Link>
-          </div>
         </div>
 
-        <p className="text-center text-gray-400 text-sm mt-8">
-          © {new Date().getFullYear()} Hadona Digital Media
-        </p>
+        <div className="text-center mt-8 space-y-1">
+          <p className="text-sm text-gray-400 flex items-center justify-center flex-wrap gap-1">
+            <span>© {new Date().getFullYear()} Portofolio Hadona. Powered by</span>{' '}
+            <a
+              href="https://hadona.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-white hover:text-gray-200 transition-colors"
+            >
+              Hadona Digital Media
+            </a>
+          </p>
+          <p className="text-xs text-gray-400">
+            Designed & Developed by <span className="font-semibold text-gray-300">Briyanes</span>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -147,7 +147,7 @@ export function QuickInfoBar({ caseStudy, variant = 'sidebar' }: QuickInfoBarPro
   };
 
   // Drag handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = () => {
     setIsDragging(true);
     sliderRef.current?.setAttribute('data-dragging', 'true');
   };

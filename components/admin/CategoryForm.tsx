@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
@@ -33,6 +34,8 @@ export function CategoryForm({
   isSubmitting = false,
 }: CategoryFormProps) {
   const [slug, setSlug] = useState(initialData?.slug || '');
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const generateSlug = (name: string) => {
     return name
@@ -51,7 +54,25 @@ export function CategoryForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    await onSubmit(formData);
+
+    startTransition(async () => {
+      try {
+        const result = await onSubmit(formData);
+
+        // Check if there's an error
+        if (result && 'error' in result && result.error) {
+          alert(`Error: ${result.error}`);
+          return;
+        }
+
+        // Success - redirect to list
+        router.push('/admin/categories');
+        router.refresh();
+      } catch (error: any) {
+        console.error('Submit error:', error);
+        alert(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
+      }
+    });
   };
 
   return (
@@ -149,16 +170,17 @@ export function CategoryForm({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = '/admin/categories'}
+          disabled={isPending}
         >
           Batal
         </Button>
         <Button
           type="submit"
           variant="primary"
-          disabled={isSubmitting}
+          disabled={isPending || isSubmitting}
         >
-          {isSubmitting ? 'Menyimpan...' : initialData?.name ? 'Update' : 'Simpan'}
+          {(isPending || isSubmitting) ? 'Menyimpan...' : initialData?.name ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>

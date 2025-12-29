@@ -82,18 +82,20 @@ export async function PUT(
     const validatedData = categorySchema.parse(body);
 
     // Check if slug is unique (excluding current category)
-    const { data: existing } = await supabaseAdmin
-      .from('categories')
-      .select('id')
-      .eq('slug', validatedData.slug)
-      .neq('id', params.id)
-      .single();
+    if (validatedData.slug) {
+      const { data: existing } = await supabaseAdmin
+        .from('categories')
+        .select('id')
+        .eq('slug', validatedData.slug)
+        .neq('id', params.id)
+        .single();
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Slug already exists' },
-        { status: 400 }
-      );
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Slug already exists' },
+          { status: 400 }
+        );
+      }
     }
 
     // Update category

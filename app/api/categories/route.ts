@@ -71,17 +71,19 @@ export async function POST(request: NextRequest) {
     const validatedData = categorySchema.parse(body);
 
     // Check if slug is unique
-    const { data: existing } = await supabaseAdmin
-      .from('categories')
-      .select('id')
-      .eq('slug', validatedData.slug)
-      .single();
+    if (validatedData.slug) {
+      const { data: existing } = await supabaseAdmin
+        .from('categories')
+        .select('id')
+        .eq('slug', validatedData.slug)
+        .single();
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Slug already exists' },
-        { status: 400 }
-      );
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Slug already exists' },
+          { status: 400 }
+        );
+      }
     }
 
     // Insert category
@@ -92,6 +94,8 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) throw error;
+
+    console.log('✓ Category created successfully:', newCategory?.name, '(ID:', newCategory?.id + ')');
 
     return NextResponse.json({ data: newCategory }, { status: 201 });
   } catch (error: any) {

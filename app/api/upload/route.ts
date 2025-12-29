@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const filePath = `${folder}/${fileName}`;
 
     // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from('case-study-images')
       .upload(filePath, file, {
         upsert: false,

@@ -60,9 +60,9 @@ export async function loginAction(formData: FormData) {
     .update({ last_login: new Date().toISOString() })
     .eq('id', adminUser.id);
 
-  revalidatePath('/admin/dashboard');
+  revalidatePath('/admin');
 
-  return { success: true, redirectTo: '/admin/dashboard' };
+  return { success: true, redirectTo: '/admin' };
 }
 
 export async function logoutAction() {

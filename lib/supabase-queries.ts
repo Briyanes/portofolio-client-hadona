@@ -106,9 +106,14 @@ export async function adminGetAllCategories() {
   const { data, error } = await supabaseAdmin
     .from('categories')
     .select('*')
-    .order('display_order', { ascending: true });
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+  console.log('Fetched categories:', data?.length || 0, 'items');
   return data as Category[];
 }
 
@@ -224,5 +229,22 @@ export async function getAgencyMetrics() {
     totalClients: uniqueClients,
     avgROAS,
     yearsExperience: new Date().getFullYear() - 2020,
+  };
+}
+
+// Get case studies count for dashboard
+export async function getCaseStudiesCount() {
+  const [totalResult, publishedResult, draftResult, featuredResult] = await Promise.all([
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', true),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', false),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('featured', true),
+  ]);
+
+  return {
+    total: totalResult.count || 0,
+    published: publishedResult.count || 0,
+    draft: draftResult.count || 0,
+    featured: featuredResult.count || 0,
   };
 }

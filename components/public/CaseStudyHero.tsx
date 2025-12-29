@@ -19,14 +19,14 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
     <section className="animate-fade-in">
       {/* Category Badge */}
       {caseStudy.category && (
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-hadona-primary/10 text-hadona-primary font-semibold text-sm mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-hadona-primary/10 text-hadona-primary font-semibold text-sm md:text-base mb-6">
           <i className={`bi ${caseStudy.category.icon || 'bi-tag'}`}></i>
           {caseStudy.category.name}
         </div>
       )}
 
       {/* Title */}
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+      <h1 className="text-hero-mobile md:text-hero-tablet lg:text-hero-desktop font-bold text-gray-900 mb-6 leading-tight">
         {caseStudy.title}
       </h1>
 
@@ -40,7 +40,7 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
               size="md"
               variant="rounded"
             />
-            <span className="text-lg font-semibold text-gray-900">{caseStudy.client_name}</span>
+            <span className="text-lg md:text-xl font-semibold text-gray-900">{caseStudy.client_name}</span>
           </div>
         </div>
       )}
@@ -61,7 +61,7 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
       {/* Metrics Grid */}
       {metrics.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metrics.map(([key, value], index) => (
+          {metrics.map(([key, value]) => (
             <MetricCard
               key={key}
               label={key}

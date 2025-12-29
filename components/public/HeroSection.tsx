@@ -19,11 +19,11 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10">
-        <h1 className="text-3xl md:text-4xl lg:text-hero text-gray-900 mb-4 md:mb-6 animate-scale-in">
+        <h1 className="text-hero-mobile md:text-hero-tablet lg:text-hero-desktop font-bold text-gray-900 mb-6 md:mb-8 animate-scale-in" style={{ lineHeight: '1.2' }}>
           Studi Kasus<br />
           <span className="text-hadona-primary">Digital Marketing</span>
         </h1>
-        <p className="text-sm md:text-base lg:text-body text-gray-600 max-w-2xl mx-auto mb-6 md:mb-8 leading-relaxed">
+        <p className="text-body-mobile md:text-body-tablet lg:text-body-desktop text-gray-600 max-w-2xl mx-auto mb-6 md:mb-8 leading-relaxed">
           Lihat bagaimana Hadona Digital Media membantu berbagai bisnis mencapai tujuan
           digital marketing mereka dengan strategi yang terbukti efektif.
         </p>

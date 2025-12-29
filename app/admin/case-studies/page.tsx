@@ -1,38 +1,27 @@
 import { adminGetAllCaseStudies } from '@/lib/supabase-queries';
 import Link from 'next/link';
-import { createSupabaseClient } from '@/lib/supabase-admin';
+import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
+import { DeleteCaseStudyButton } from './DeleteCaseStudyButton';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminCaseStudiesPage() {
   const caseStudies = await adminGetAllCaseStudies();
-  const supabase = await createSupabaseClient();
-  const { data: { session } } = await supabase.auth.getSession();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/admin/dashboard"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                ← Dashboard
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Kelola Studi Kasus</h1>
-            </div>
-            <Link
-              href="/admin/dashboard/case-studies/new"
-              className="bg-hadona-primary text-white px-4 py-2 rounded-lg hover:bg-hadona-dark transition-colors font-semibold"
-            >
-              + Tambah Baru
-            </Link>
-          </div>
+    <AdminProtectedLayout>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">Kelola Studi Kasus</h1>
+          <Link
+            href="/admin/case-studies/new"
+            className="bg-hadona-primary text-white px-4 py-2 rounded-lg hover:bg-hadona-dark transition-colors font-semibold"
+          >
+            + Tambah Baru
+          </Link>
         </div>
-      </header>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 py-8">
         {/* Case Studies Table */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           {caseStudies.length > 0 ? (
@@ -74,7 +63,7 @@ export default async function AdminCaseStudiesPage() {
                           </div>
                         )}
                         <Link
-                          href={`/admin/dashboard/case-studies/${cs.id}`}
+                          href={`/admin/case-studies/${cs.id}`}
                           className="text-sm font-medium text-hadona-primary hover:text-hadona-dark line-clamp-2"
                         >
                           {cs.title}
@@ -117,27 +106,15 @@ export default async function AdminCaseStudiesPage() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/admin/dashboard/case-studies/${cs.id}`}
+                          href={`/admin/case-studies/${cs.id}`}
                           className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                         >
                           Edit
                         </Link>
-                        <form
-                          action={`/api/case-studies/${cs.id}/delete`}
-                          method="POST"
-                          onSubmit={(e) => {
-                            if (!confirm('Yakin ingin menghapus studi kasus ini?')) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
-                          <button
-                            type="submit"
-                            className="text-red-600 hover:text-red-800 text-sm font-medium"
-                          >
-                            Delete
-                          </button>
-                        </form>
+                        <DeleteCaseStudyButton
+                          caseStudyId={cs.id}
+                          caseStudyTitle={cs.title}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -148,7 +125,7 @@ export default async function AdminCaseStudiesPage() {
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500 mb-4">Belum ada studi kasus</p>
               <Link
-                href="/admin/dashboard/case-studies/new"
+                href="/admin/case-studies/new"
                 className="inline-block bg-hadona-primary text-white px-4 py-2 rounded-lg hover:bg-hadona-dark transition-colors font-semibold"
               >
                 Buat studi kasus pertama →
@@ -157,6 +134,6 @@ export default async function AdminCaseStudiesPage() {
           )}
         </div>
       </div>
-    </div>
+    </AdminProtectedLayout>
   );
 }
