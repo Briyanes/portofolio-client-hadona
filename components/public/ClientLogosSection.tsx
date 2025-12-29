@@ -17,6 +17,9 @@ export function ClientLogosSection({
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
 
+  // Debug: Log clients data
+  console.log('ClientLogosSection received clients:', clients);
+
   // Use all clients and duplicate for seamless infinite loop
   // Duplicate array 3 times for seamless infinite scrolling
   const duplicatedClients = [...clients, ...clients, ...clients];
@@ -95,13 +98,23 @@ export function ClientLogosSection({
               key={`${client.name}-${index}`}
               className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
             >
-              <Image
-                src={client.logo_url}
-                alt={client.name}
-                width={200}
-                height={100}
-                className="h-16 md:h-20 lg:h-24 w-auto object-contain"
-              />
+              {client.logo_url ? (
+                <Image
+                  src={client.logo_url}
+                  alt={client.name}
+                  width={200}
+                  height={100}
+                  className="h-16 md:h-20 lg:h-24 w-auto object-contain"
+                  unoptimized={true}
+                  onError={(e) => {
+                    console.error('Image load error:', client.name, client.logo_url);
+                  }}
+                />
+              ) : (
+                <div className="h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2">
+                  {client.name}
+                </div>
+              )}
             </div>
           ))}
         </div>
