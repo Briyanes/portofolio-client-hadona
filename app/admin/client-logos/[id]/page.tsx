@@ -1,5 +1,6 @@
 import { adminGetClientLogoById } from '@/lib/supabase-queries';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { ClientLogoForm } from '@/components/admin/ClientLogoForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
