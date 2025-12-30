@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,25 +49,29 @@ export function Header() {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        <div>
-          <h1 style={{
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#111827',
-            margin: 0,
-            marginBottom: '4px'
-          }}>
-            Portofolio Hadona
-          </h1>
-          <p style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            margin: 0
-          }}>
-            Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
-          </p>
-        </div>
-        <div style={{
+        <Link href="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <div>
+            <h1 className="responsive-header-title" style={{
+              fontSize: '32px',
+              fontWeight: 'bold',
+              color: '#111827',
+              margin: 0,
+              marginBottom: '4px',
+              lineHeight: '1.2'
+            }}>
+              Portofolio Hadona
+            </h1>
+            <p className="responsive-header-subtitle" style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              margin: 0,
+              lineHeight: '1.4'
+            }}>
+              Powered by <span style={{ fontWeight: '600' }}>Hadona Digital Media</span>
+            </p>
+          </div>
+        </Link>
+        <div className="responsive-header-logo-container" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
@@ -92,6 +97,7 @@ export function Header() {
             <Image
               src="/logo/logo-hadona.png"
               alt="Hadona Digital Media"
+              className="responsive-header-logo"
               width={200}
               height={80}
               style={{

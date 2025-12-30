@@ -896,3 +896,83 @@ a {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ========== RESPONSIVE HEADER STYLES ========== */
+
+/* Tablet Styles */
+@media (max-width: 768px) {
+  .responsive-header-title {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .responsive-header-subtitle {
+    font-size: 12px !important;
+    margin-top: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .responsive-header-logo-container {
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    align-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: auto !important;
+    margin-left: auto !important;
+  }
+  
+  .responsive-header-logo {
+    height: 40px !important;
+    width: auto !important;
+    max-width: 100px !important;
+    display: block !important;
+    object-fit: contain !important;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 480px) {
+  .responsive-header-title {
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-bottom: 2px !important;
+  }
+
+  .responsive-header-subtitle {
+    font-size: 11px !important;
+    margin-top: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .responsive-header-logo-container {
+    align-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    width: auto !important;
+    margin-left: auto !important;
+  }
+
+  .responsive-header-logo {
+    height: 35px !important;
+    width: auto !important;
+    max-width: 80px !important;
+    display: block !important;
+    object-fit: contain !important;
+  }
+}
