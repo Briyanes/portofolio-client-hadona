@@ -95,10 +95,9 @@ export function ImageUpload({
       <input
         ref={fileInputRef}
         type="file"
-        name={name}
+        name={`${name}_file`}
         accept="image/jpeg,image/png,image/webp"
         onChange={handleFileSelect}
-        required={required && !preview}
         className="hidden"
       />
 

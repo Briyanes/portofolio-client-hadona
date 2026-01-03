@@ -59,7 +59,15 @@ export function CaseStudyForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // Validate required image fields
+    const thumbnailUrl = formData.get('thumbnail_url');
+    if (!thumbnailUrl || typeof thumbnailUrl !== 'string' || !thumbnailUrl.trim()) {
+      alert('Thumbnail wajib diupload');
+      return;
+    }
 
     // Add slug (controlled input) to form data
     formData.set('slug', slug);
