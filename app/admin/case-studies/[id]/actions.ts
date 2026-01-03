@@ -126,6 +126,17 @@ export async function updateCaseStudy(id: string, formData: FormData) {
     revalidatePath('/admin/case-studies');
     revalidatePath(`/admin/case-studies/${id}`);
 
+    // Get the case study slug to revalidate public page
+    const { data: caseStudyData } = await supabaseAdmin
+      .from('case_studies')
+      .select('slug')
+      .eq('id', id)
+      .single();
+
+    if (caseStudyData?.slug) {
+      revalidatePath(`/studi-kasus/${caseStudyData.slug}`);
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error('Update error:', error);

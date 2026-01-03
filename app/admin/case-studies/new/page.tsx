@@ -142,6 +142,11 @@ export default async function NewCaseStudyPage() {
       revalidatePath('/admin/case-studies');
       revalidatePath('/admin/case-studies/new');
 
+      // Revalidate public page if slug exists
+      if (validatedData.slug) {
+        revalidatePath(`/studi-kasus/${validatedData.slug}`);
+      }
+
       // Return success - client will handle redirect
       return { success: true };
     } catch (error: any) {
