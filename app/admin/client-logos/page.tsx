@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { getAdminUserWithToken } from '@/lib/admin-auth';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
-import Image from 'next/image';
 import { DeleteClientLogoButton } from '@/components/admin/DeleteClientLogoButton';
 
 export const dynamic = 'force-dynamic';
@@ -63,12 +62,11 @@ export default async function ClientLogosPage() {
                 {clientLogos.map((logo) => (
                   <tr key={logo.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <div className="relative w-16 h-16">
-                        <Image
+                      <div className="flex items-center justify-center w-16 h-16 bg-white rounded-lg border border-gray-200 p-2">
+                        <img
                           src={logo.logo_url}
                           alt={logo.name}
-                          fill
-                          className="object-contain"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
                     </td>
