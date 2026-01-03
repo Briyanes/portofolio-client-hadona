@@ -29,6 +29,7 @@ export default async function NewCaseStudyPage() {
 
     try {
       console.log('Creating case study...');
+      console.log('FormData keys:', Array.from(formData.keys()));
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
       const response = await fetch(`${baseUrl}/api/case-studies`, {
@@ -39,7 +40,9 @@ export default async function NewCaseStudyPage() {
         cache: 'no-store',
       });
 
+      console.log('Response status:', response.status);
       const result = await response.json();
+      console.log('Response result:', result);
 
       if (!response.ok) {
         console.error('API Error:', result);
