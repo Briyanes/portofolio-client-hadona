@@ -27,17 +27,13 @@ export default async function NewCaseStudyPage() {
       return { error: 'Unauthorized' };
     }
 
-    const { accessToken } = auth;
-
     try {
       console.log('Creating case study...');
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
       const response = await fetch(`${baseUrl}/api/case-studies`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
+        headers: {},
         body: formData,
         cache: 'no-store',
       });
