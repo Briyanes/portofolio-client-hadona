@@ -2,6 +2,8 @@
 
 import { getAdminUserForAction } from '@/lib/admin-auth';
 import { revalidatePath } from 'next/cache';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { caseStudySchema } from '@/lib/validators';
 
 export async function updateCaseStudy(id: string, formData: FormData) {
   const auth = await getAdminUserForAction();
@@ -11,20 +13,114 @@ export async function updateCaseStudy(id: string, formData: FormData) {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/case-studies/${id}`, {
-      method: 'PUT',
-      headers: {},
-      credentials: 'include',
-      body: formData,
-      cache: 'no-store',
-    });
+    console.log('Updating case study:', id);
+    console.log('FormData keys:', Array.from(formData.keys()));
 
-    const result = await response.json();
+    // Helper untuk mengambil string dari FormData
+    const getString = (key: string): string => {
+      const val = formData.get(key);
+      if (val instanceof File) return '';
+      return val === null || val === undefined ? '' : String(val);
+    };
 
-    if (!response.ok) {
-      return { error: result.error || 'Failed to update case study' };
+    // Helper untuk boolean dari FormData
+    const getBoolean = (key: string): boolean => {
+      const val = formData.get(key);
+      return val === 'on' || val === 'true';
+    };
+
+    // Parse metrics JSON
+    let parsedMetrics;
+    const metrics_json = getString('metrics');
+    if (metrics_json && metrics_json.trim() !== '') {
+      try {
+        parsedMetrics = JSON.parse(metrics_json);
+      } catch (e) {
+        parsedMetrics = undefined;
+      }
     }
+
+    // Parse meta keywords
+    let parsedKeywords;
+    const meta_keywords_str = getString('meta_keywords');
+    if (meta_keywords_str && meta_keywords_str.trim() !== '') {
+      parsedKeywords = meta_keywords_str.split(',').map((k: string) => k.trim()).filter(Boolean);
+    }
+
+    // Parse gallery_urls
+    let gallery_urls;
+    const gallery_urls_str = formData.get('gallery_urls');
+    if (gallery_urls_str && typeof gallery_urls_str === 'string' && gallery_urls_str.trim() !== '') {
+      try {
+        gallery_urls = JSON.parse(gallery_urls_str);
+        if (!Array.isArray(gallery_urls)) {
+          gallery_urls = undefined;
+        }
+      } catch (e) {
+        gallery_urls = undefined;
+      }
+    }
+
+    // Prepare data for validation
+    const rawData = {
+      title: getString('title').trim(),
+      slug: getString('slug').trim(),
+      client_name: getString('client_name').trim(),
+      category_id: getString('category_id').trim(),
+      challenge: getString('challenge').trim(),
+      strategy: getString('strategy').trim(),
+      results: getString('results').trim(),
+      testimonial: getString('testimonial').trim(),
+      testimonial_author: getString('testimonial_author').trim(),
+      testimonial_position: getString('testimonial_position').trim(),
+      metrics: parsedMetrics,
+      meta_title: getString('meta_title').trim(),
+      meta_description: getString('meta_description').trim(),
+      meta_keywords: parsedKeywords,
+      thumbnail_url: getString('thumbnail_url').trim(),
+      hero_image_url: getString('hero_image_url').trim(),
+      client_logo_url: getString('client_logo_url').trim(),
+      gallery_urls: gallery_urls,
+      display_order: parseInt(getString('display_order')) || 0,
+      is_featured: getBoolean('is_featured'),
+      is_published: getBoolean('is_published'),
+      website_url: getString('website_url').trim(),
+      instagram_url: getString('instagram_url').trim(),
+      facebook_url: getString('facebook_url').trim(),
+      services: getString('services').trim(),
+    };
+
+    // Validate with Zod
+    const validatedData = caseStudySchema.parse(rawData);
+
+    // Check if slug is unique (exclude current record)
+    if (validatedData.slug) {
+      const { data: existing } = await supabaseAdmin
+        .from('case_studies')
+        .select('id')
+        .eq('slug', validatedData.slug)
+        .neq('id', id)
+        .single();
+
+      if (existing) {
+        return { error: 'Slug already exists' };
+      }
+    }
+
+    // Update case study
+    const { data: updatedCaseStudy, error } = await supabaseAdmin
+      .from('case_studies')
+      .update({
+        ...validatedData,
+        updated_by: auth.user.id,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✓ Case study updated successfully');
 
     // Revalidate paths
     revalidatePath('/admin/case-studies');
@@ -33,6 +129,9 @@ export async function updateCaseStudy(id: string, formData: FormData) {
     return { success: true };
   } catch (error: any) {
     console.error('Update error:', error);
+    if (error.name === 'ZodError') {
+      return { error: 'Validation error', details: error.errors };
+    }
     return { error: error.message || 'Something went wrong' };
   }
 }
