@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { ImageUpload } from './ImageUpload';
+import { MultipleImageUpload } from './MultipleImageUpload';
 import { Category, CaseStudyFormData } from '@/lib/types';
 
 interface CaseStudyFormProps {
@@ -183,6 +184,22 @@ export function CaseStudyForm({
             label="Logo Klien"
             defaultValue={initialData?.client_logo_url || ''}
             recommendedSize="500x500px"
+          />
+        </div>
+      </div>
+
+      {/* Section 2.5: Gallery (Optional) */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Gallery (Opsional)</h2>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Upload gambar tambahan untuk ditampilkan di gallery case study. Bisa upload lebih dari 1 gambar sekaligus.
+          </p>
+          <MultipleImageUpload
+            name="gallery_urls"
+            label="Gambar Gallery"
+            defaultValues={initialData?.gallery_urls || []}
+            recommendedSize="1920x1080px atau 1080x1080px"
           />
         </div>
       </div>
