@@ -35,8 +35,6 @@ export default async function EditCategoryPage({
       return { error: 'Unauthorized' };
     }
 
-    const { accessToken } = auth;
-
     try {
       const name = formData.get('name') as string;
       const slug = formData.get('slug') as string;
@@ -60,7 +58,6 @@ export default async function EditCategoryPage({
       const response = await fetch(`${baseUrl}/api/categories/${params.id}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),

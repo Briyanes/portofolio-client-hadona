@@ -10,15 +10,11 @@ export async function updateCaseStudy(id: string, formData: FormData) {
     return { error: 'Unauthorized' };
   }
 
-  const { accessToken } = auth;
-
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/case-studies/${id}`, {
       method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
+      headers: {},
       body: formData,
       cache: 'no-store',
     });
