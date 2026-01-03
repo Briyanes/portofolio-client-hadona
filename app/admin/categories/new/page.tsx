@@ -51,7 +51,6 @@ export default async function NewCategoryPage() {
       const response = await fetch(`${baseUrl}/api/categories`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
