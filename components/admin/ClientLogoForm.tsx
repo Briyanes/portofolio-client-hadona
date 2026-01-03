@@ -57,7 +57,7 @@ export function ClientLogoForm({
           />
 
           <ImageUpload
-            name="logo_url"
+            name="logo"
             label="Logo Klien"
             defaultValue={initialData?.logo_url || ''}
             recommendedSize="200x200px"
