@@ -34,6 +34,7 @@ export default async function NewCaseStudyPage() {
       const response = await fetch(`${baseUrl}/api/case-studies`, {
         method: 'POST',
         headers: {},
+        credentials: 'include',
         body: formData,
         cache: 'no-store',
       });

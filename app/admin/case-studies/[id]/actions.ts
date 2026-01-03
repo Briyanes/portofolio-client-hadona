@@ -15,6 +15,7 @@ export async function updateCaseStudy(id: string, formData: FormData) {
     const response = await fetch(`${baseUrl}/api/case-studies/${id}`, {
       method: 'PUT',
       headers: {},
+      credentials: 'include',
       body: formData,
       cache: 'no-store',
     });
