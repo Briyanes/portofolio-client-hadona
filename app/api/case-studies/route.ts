@@ -1,13 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { caseStudySchema } from '@/lib/validators';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 // GET all case studies (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(
-      request.headers.get('Authorization')?.replace('Bearer ', '') || ''
+    // Get session from cookies
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
     );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify user is admin
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -48,11 +69,32 @@ export async function GET(request: NextRequest) {
 // POST create new case study
 export async function POST(request: NextRequest) {
   try {
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(
-      request.headers.get('Authorization')?.replace('Bearer ', '') || ''
+    // Get session from cookies
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
     );
 
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Session error:', sessionError);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify user is admin
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
+
     if (authError || !user) {
+      console.error('Auth error:', authError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -65,10 +107,12 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!adminUser) {
+      console.error('User is not admin:', user.id);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const formData = await request.formData();
+    console.log('Received form data keys:', Array.from(formData.keys()));
 
     // Helper untuk mengambil string dari FormData
     const getString = (key: string): string => {

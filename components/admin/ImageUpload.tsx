@@ -36,18 +36,36 @@ export function ImageUpload({
     setIsUploading(true);
 
     try {
-      // Create local preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      // Upload to server
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', name); // use field name as folder
 
-      // Upload to server (will be handled by form submission)
+      // Use relative URL - cookies will be sent automatically
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        credentials: 'include', // Include cookies
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const data = await response.json();
+
+      // Set preview with uploaded URL
+      setPreview(data.url);
       setIsUploading(false);
-    } catch {
-      setError('Gagal mengupload gambar');
+    } catch (err: any) {
+      setError(err.message || 'Gagal mengupload gambar');
       setIsUploading(false);
+      // Reset preview on error
+      setPreview(undefined);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
