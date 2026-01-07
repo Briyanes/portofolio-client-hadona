@@ -64,7 +64,7 @@ export function ContentSection({ type, content, title }: ContentSectionProps) {
         </div>
 
         <div className="prose max-w-none mt-6">
-          <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base md:text-lg">
+          <p className="text-gray-700 whitespace-pre-line leading-relaxed text-small-mobile md:text-small-tablet lg:text-small-desktop">
             {content}
           </p>
         </div>

@@ -26,7 +26,7 @@ export function CaseStudyHero({ caseStudy }: CaseStudyHeroProps) {
       )}
 
       {/* Title */}
-      <h1 className="text-h3-mobile md:text-h3-tablet lg:text-h3-desktop font-bold text-gray-900 mb-6 leading-tight">
+      <h1 className="text-h2-mobile md:text-h2-tablet lg:text-h2-desktop font-bold text-gray-900 mb-6 leading-tight">
         {caseStudy.title}
       </h1>
 
