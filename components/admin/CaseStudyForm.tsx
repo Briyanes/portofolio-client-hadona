@@ -142,14 +142,14 @@ export function CaseStudyForm({
           </div>
 
           <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori
             </label>
             <select
               id="category_id"
               name="category_id"
               required
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-hadona-primary bg-white transition-colors"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
               defaultValue={initialData?.category_id || ''}
             >
               <option value="">Pilih Kategori</option>
@@ -161,15 +161,13 @@ export function CaseStudyForm({
             </select>
           </div>
 
-          <div>
-            <Input
-              name="display_order"
-              label="Urutan Tampilan"
-              type="number"
-              defaultValue={initialData?.display_order ?? 0}
-              placeholder="0"
-            />
-          </div>
+          <Input
+            name="display_order"
+            label="Urutan Tampilan"
+            type="number"
+            defaultValue={initialData?.display_order ?? 0}
+            placeholder="0"
+          />
         </div>
       </div>
 
