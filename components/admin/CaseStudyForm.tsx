@@ -142,12 +142,14 @@ export function CaseStudyForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
               Kategori
             </label>
             <select
+              id="category_id"
               name="category_id"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-hadona-primary"
+              required
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-hadona-primary bg-white transition-colors"
               defaultValue={initialData?.category_id || ''}
             >
               <option value="">Pilih Kategori</option>
@@ -295,7 +297,7 @@ export function CaseStudyForm({
         </div>
         <div className="space-y-3">
           {metrics.map((metric, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
               <Input
                 value={metric.label}
                 onChange={(e) => updateMetric(index, 'label', e.target.value)}
@@ -310,7 +312,6 @@ export function CaseStudyForm({
                 type="button"
                 variant="danger"
                 onClick={() => removeMetric(index)}
-                className="mt-6"
               >
                 Hapus
               </Button>
