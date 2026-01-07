@@ -59,6 +59,9 @@ export default async function AdminCaseStudiesPage() {
                               src={cs.thumbnail_url}
                               alt={cs.title}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
                             />
                           </div>
                         )}
