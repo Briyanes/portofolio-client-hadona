@@ -29,14 +29,12 @@ export async function getAdminUserWithToken(): Promise<{ user: User; accessToken
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.log('No session found:', sessionError?.message);
       return null;
     }
 
     // Verify user is admin using the access token from session
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
     if (authError || !user) {
-      console.log('Auth error:', authError?.message);
       return null;
     }
 
@@ -48,13 +46,11 @@ export async function getAdminUserWithToken(): Promise<{ user: User; accessToken
       .single();
 
     if (!adminUser) {
-      console.log('User is not an admin');
       return null;
     }
 
     return { user, accessToken: session.access_token };
   } catch (error) {
-    console.error('Error getting admin user:', error);
     return null;
   }
 }
@@ -80,25 +76,22 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.log('No session found in action:', sessionError?.message);
       return null;
     }
 
     // Try to refresh session if access token is expired
-    if (session.expires_at && session.expires_at < Date.now() / 1000) {
-      console.log('Session expired, attempting refresh...');
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (session.expires_at && session.expires_at < currentTime) {
       const { data: { session: refreshedSession }, error: refreshError } =
         await supabase.auth.refreshSession();
 
       if (refreshError || !refreshedSession) {
-        console.log('Session refresh failed:', refreshError?.message);
         return null;
       }
 
       // Verify user is admin using the refreshed access token
       const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(refreshedSession.access_token);
       if (authError || !user) {
-        console.log('Auth error after refresh in action:', authError?.message);
         return null;
       }
 
@@ -110,7 +103,6 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
         .single();
 
       if (!adminUser) {
-        console.log('User is not an admin in action after refresh');
         return null;
       }
 
@@ -120,7 +112,6 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
     // Verify user is admin using the access token from session
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
     if (authError || !user) {
-      console.log('Auth error in action:', authError?.message);
       return null;
     }
 
@@ -132,13 +123,11 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
       .single();
 
     if (!adminUser) {
-      console.log('User is not an admin in action');
       return null;
     }
 
     return { user, accessToken: session.access_token };
   } catch (error) {
-    console.error('Error getting admin user in action:', error);
     return null;
   }
 }

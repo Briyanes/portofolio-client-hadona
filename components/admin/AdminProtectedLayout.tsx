@@ -24,7 +24,7 @@ export default async function AdminProtectedLayout({
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 min-h-screen">
         {/* Header - Can be hidden */}
-        {showHeader && <AdminHeader user={user} />}
+        {showHeader && <AdminHeader />}
 
         {/* Page Content */}
         <main className="p-4 md:p-6 lg:p-8 w-full">

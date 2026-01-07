@@ -1,16 +1,11 @@
 'use client';
 
-import { User } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-interface AdminHeaderProps {
-  user: User;
-}
-
-export function AdminHeader({}: AdminHeaderProps) {
+export function AdminHeader() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

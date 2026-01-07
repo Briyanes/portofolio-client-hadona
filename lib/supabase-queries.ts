@@ -81,11 +81,14 @@ export async function getCategoryBySlug(slug: string) {
 export async function adminGetAllCaseStudies() {
   const { data, error } = await supabaseAdmin
     .from('case_studies')
-    .select('*, category:categories(*)')
+    .select('*, categories(*)')
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching case studies:', error);
+    throw error;
+  }
   return data as CaseStudy[];
 }
 
@@ -93,11 +96,14 @@ export async function adminGetAllCaseStudies() {
 export async function adminGetCaseStudyById(id: string) {
   const { data, error } = await supabaseAdmin
     .from('case_studies')
-    .select('*, category:categories(*)')
+    .select('*, categories(*)')
     .eq('id', id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching case study by ID:', error);
+    throw error;
+  }
   return data as CaseStudy;
 }
 
