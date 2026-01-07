@@ -13,7 +13,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
   return (
     <nav className="py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
-        <ol className="flex items-center gap-2 text-sm">
+        <ol className="flex flex-wrap items-center gap-2 text-sm">
           {items.map((item, index) => (
             <li key={index} className="flex items-center gap-2">
               {index > 0 && (
