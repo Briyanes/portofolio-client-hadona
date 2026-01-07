@@ -141,7 +141,7 @@ export function CaseStudyForm({
             />
           </div>
 
-          <div>
+          <div className="relative">
             <label htmlFor="category_id" className="block text-sm font-semibold text-gray-700 mb-2">
               Kategori
             </label>
@@ -149,7 +149,7 @@ export function CaseStudyForm({
               id="category_id"
               name="category_id"
               required
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary bg-white disabled:bg-gray-100 disabled:cursor-not-allowed appearance-none cursor-pointer"
               defaultValue={initialData?.category_id || ''}
             >
               <option value="">Pilih Kategori</option>
@@ -159,6 +159,11 @@ export function CaseStudyForm({
                 </option>
               ))}
             </select>
+            <div className="absolute inset-y-0 right-0 top-7 flex items-center pr-3 pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
 
           <Input
