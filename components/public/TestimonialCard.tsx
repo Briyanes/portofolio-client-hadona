@@ -23,7 +23,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
           </div>
 
           {/* Testimonial text */}
-          <blockquote className="text-lg md:text-xl font-medium text-gray-800 italic mb-8 leading-relaxed">
+          <blockquote className="text-small-mobile md:text-small-tablet lg:text-small-desktop font-medium text-gray-800 italic mb-8 leading-relaxed">
             "{testimonial.testimonial}"
           </blockquote>
 
