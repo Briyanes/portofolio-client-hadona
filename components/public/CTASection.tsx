@@ -49,7 +49,7 @@ export function CTASection({ variant = 'home' }: CTASectionProps) {
           </div>
 
           {/* Content */}
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4">
             {content.title}
           </h2>
           <p className="text-body text-gray-200 mb-8 max-w-2xl mx-auto">

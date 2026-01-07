@@ -51,19 +51,19 @@ export function ContentSection({ type, content, title }: ContentSectionProps) {
                        bg-white shadow-lg hover:scale-110
                        transition-transform duration-300"
           >
-            <i className={`bi ${config.icon} text-2xl md:text-3xl`} style={{ color: config.iconColor }}></i>
+            <i className={`bi ${config.icon} text-xl md:text-2xl`} style={{ color: config.iconColor }}></i>
           </div>
           <div>
             <p className={`text-sm font-bold ${config.labelColor} uppercase tracking-wide`}>
               {config.label}
             </p>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+            <h2 className="text-h4-mobile md:text-h4-tablet lg:text-h4-desktop font-bold text-gray-900">
               {title || config.title}
             </h2>
           </div>
         </div>
 
-        <div className="prose prose-lg max-w-none mt-6">
+        <div className="prose max-w-none mt-6">
           <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base md:text-lg">
             {content}
           </p>
