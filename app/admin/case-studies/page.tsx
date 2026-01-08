@@ -77,14 +77,17 @@ export default async function AdminCaseStudiesPage() {
                     <td className="px-6 py-4 text-sm text-gray-600">{cs.client_name}</td>
                     <td className="px-6 py-4">
                       {cs.categories?.name ? (
-                        <span
-                          className="inline-flex px-2 py-1 text-xs font-semibold rounded-full text-white"
-                          style={{
-                            backgroundColor: cs.categories.color || '#2B46BB',
-                          }}
-                        >
-                          {cs.categories.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {cs.categories.color && (
+                            <span
+                              className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: cs.categories.color }}
+                            ></span>
+                          )}
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                            {cs.categories.name}
+                          </span>
+                        </div>
                       ) : (
                         <span className="text-gray-400 text-sm">-</span>
                       )}
