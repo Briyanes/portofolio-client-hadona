@@ -1,8 +1,11 @@
 'use client';
 
 import { getWhatsAppURL } from '@/lib/constants';
+import { usePixelTracking } from '@/lib/hooks/usePixelTracking';
 
 export function HeroSection() {
+  const { trackInitiateCheckout } = usePixelTracking();
+
   const handleScrollToCategories = () => {
     const element = document.getElementById('kategori');
     if (element) {
@@ -40,6 +43,7 @@ export function HeroSection() {
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary group w-full sm:w-auto text-sm md:text-base"
+            onClick={() => trackInitiateCheckout()}
           >
             <i className="bi bi-whatsapp text-base md:text-lg"></i>
             Hubungi Kami

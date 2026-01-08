@@ -86,7 +86,7 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
               placeholder="e.g., 1234567890123456"
               value={formData.meta_pixel_id}
               onChange={(e) => setFormData({ ...formData, meta_pixel_id: e.target.value })}
-              helper="Find your Pixel ID in Meta Events Manager"
+              helperText="Find your Pixel ID in Meta Events Manager"
               required={formData.is_meta_enabled}
             />
           </div>
@@ -124,7 +124,7 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
               placeholder="e.g., 1234567890123456"
               value={formData.ig_pixel_id}
               onChange={(e) => setFormData({ ...formData, ig_pixel_id: e.target.value })}
-              helper="Find your Pixel ID in Meta Events Manager"
+              helperText="Find your Pixel ID in Meta Events Manager"
               required={formData.is_ig_enabled}
             />
           </div>
@@ -162,7 +162,7 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
               placeholder="e.g., G-XXXXXXXXXX"
               value={formData.gtag_id}
               onChange={(e) => setFormData({ ...formData, gtag_id: e.target.value })}
-              helper="Format: G-XXXXXXXXXX (found in GA4 Admin → Data Streams)"
+              helperText="Format: G-XXXXXXXXXX (found in GA4 Admin → Data Streams)"
               required={formData.is_gtag_enabled}
             />
           </div>

@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 /**
  * Custom hook to track pixel events
  * Usage: trackEvent('InitiateCheckout', { value: 100, currency: 'IDR' })

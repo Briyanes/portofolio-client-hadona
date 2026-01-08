@@ -1,10 +1,14 @@
+'use client';
+
 import { getWhatsAppURL } from '@/lib/constants';
+import { usePixelTracking } from '@/lib/hooks/usePixelTracking';
 
 interface CTASectionProps {
   variant?: 'home' | 'category' | 'case-study';
 }
 
 export function CTASection({ variant = 'home' }: CTASectionProps) {
+  const { trackInitiateCheckout } = usePixelTracking();
   const getContent = () => {
     switch (variant) {
       case 'home':
@@ -63,6 +67,7 @@ export function CTASection({ variant = 'home' }: CTASectionProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary bg-hadona-yellow text-gray-900 hover:bg-hadona-yellow-dark group w-full sm:w-auto"
+              onClick={() => trackInitiateCheckout()}
             >
               <i className="bi bi-whatsapp text-xl"></i>
               Hubungi via WhatsApp
