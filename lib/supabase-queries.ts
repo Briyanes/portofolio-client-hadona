@@ -351,3 +351,79 @@ export async function adminGetClientLogoById(id: string) {
   if (error) throw error;
   return data as ClientLogo;
 }
+
+// ==================== PIXEL SETTINGS ====================
+
+export async function getPixelSettings() {
+  const { data, error } = await supabaseAdmin
+    .from('pixel_settings')
+    .select('*')
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // No settings found, return defaults
+      return {
+        meta_pixel_id: null,
+        ig_pixel_id: null,
+        gtag_id: null,
+        is_meta_enabled: false,
+        is_ig_enabled: false,
+        is_gtag_enabled: false,
+      };
+    }
+    console.error('Error fetching pixel settings:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function updatePixelSettings(settings: {
+  meta_pixel_id?: string | null;
+  ig_pixel_id?: string | null;
+  gtag_id?: string | null;
+  is_meta_enabled?: boolean;
+  is_ig_enabled?: boolean;
+  is_gtag_enabled?: boolean;
+}) {
+  // Check if settings exist
+  const { data: existing } = await supabaseAdmin
+    .from('pixel_settings')
+    .select('id')
+    .single();
+
+  let result;
+
+  if (existing) {
+    // Update existing
+    result = await supabaseAdmin
+      .from('pixel_settings')
+      .update({
+        ...settings,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+      .select()
+      .single();
+  } else {
+    // Insert new
+    result = await supabaseAdmin
+      .from('pixel_settings')
+      .insert({
+        ...settings,
+        id: '1', // Single row settings
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    console.error('Error updating pixel settings:', result.error);
+    throw result.error;
+  }
+
+  return result.data;
+}

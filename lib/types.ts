@@ -185,3 +185,25 @@ export interface ImageUploadProps {
   recommendedSize?: string;
   required?: boolean;
 }
+
+// Pixel & Analytics Settings Types
+export interface PixelSettings {
+  id?: string;
+  meta_pixel_id: string | null;
+  ig_pixel_id: string | null;
+  gtag_id: string | null;
+  is_meta_enabled: boolean;
+  is_ig_enabled: boolean;
+  is_gtag_enabled: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PixelFormData {
+  meta_pixel_id: string;
+  ig_pixel_id: string;
+  gtag_id: string;
+  is_meta_enabled: boolean;
+  is_ig_enabled: boolean;
+  is_gtag_enabled: boolean;
+}
