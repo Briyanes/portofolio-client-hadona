@@ -2,11 +2,17 @@ import { adminGetAllCategories } from '@/lib/supabase-queries';
 import Link from 'next/link';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import { DeleteCategoryButton } from './DeleteCategoryButton';
+import type { Category } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCategoriesPage() {
-  const categories = await adminGetAllCategories();
+  let categories: Category[] = [];
+  try {
+    categories = await adminGetAllCategories();
+  } catch (error) {
+    console.error('Error loading categories:', error);
+  }
 
   return (
     <AdminProtectedLayout>

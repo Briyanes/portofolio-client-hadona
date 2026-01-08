@@ -4,6 +4,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 import { DeleteClientLogoButton } from '@/components/admin/DeleteClientLogoButton';
+import type { ClientLogo } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,12 @@ export default async function ClientLogosPage() {
     redirect('/admin/login');
   }
 
-  const clientLogos = await adminGetAllClientLogos();
+  let clientLogos: ClientLogo[] = [];
+  try {
+    clientLogos = await adminGetAllClientLogos();
+  } catch (error) {
+    console.error('Error loading client logos:', error);
+  }
 
   return (
     <AdminProtectedLayout>

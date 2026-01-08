@@ -4,6 +4,7 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 import { DeleteTestimonialButton } from '@/components/admin/DeleteTestimonialButton';
+import type { Testimonial } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,12 @@ export default async function TestimonialsPage() {
     redirect('/admin/login');
   }
 
-  const testimonials = await adminGetAllTestimonials();
+  let testimonials: Testimonial[] = [];
+  try {
+    testimonials = await adminGetAllTestimonials();
+  } catch (error) {
+    console.error('Error loading testimonials:', error);
+  }
 
   return (
     <AdminProtectedLayout>

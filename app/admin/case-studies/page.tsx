@@ -2,11 +2,17 @@ import { adminGetAllCaseStudies } from '@/lib/supabase-queries';
 import Link from 'next/link';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import { DeleteCaseStudyButton } from './DeleteCaseStudyButton';
+import type { CaseStudy } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCaseStudiesPage() {
-  const caseStudies = await adminGetAllCaseStudies();
+  let caseStudies: CaseStudy[] = [];
+  try {
+    caseStudies = await adminGetAllCaseStudies();
+  } catch (error) {
+    console.error('Error loading case studies:', error);
+  }
 
   return (
     <AdminProtectedLayout>
