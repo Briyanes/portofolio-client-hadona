@@ -2,6 +2,7 @@ import { adminGetAllCaseStudies } from '@/lib/supabase-queries';
 import Link from 'next/link';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import { DeleteCaseStudyButton } from './DeleteCaseStudyButton';
+import { CaseStudyThumbnail } from '@/components/admin/case-studies/CaseStudyThumbnail';
 import type { CaseStudy } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -60,16 +61,10 @@ export default async function AdminCaseStudiesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {cs.thumbnail_url && (
-                          <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                            <img
-                              src={cs.thumbnail_url}
-                              alt={cs.title}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
-                          </div>
+                          <CaseStudyThumbnail
+                            src={cs.thumbnail_url}
+                            alt={cs.title}
+                          />
                         )}
                         <Link
                           href={`/admin/case-studies/${cs.id}`}
