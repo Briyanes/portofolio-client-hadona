@@ -19,7 +19,6 @@ export default async function AdminSettingsPage() {
 
   try {
     pixelSettings = await getPixelSettings();
-    console.log('[Admin Settings Page] Loaded pixelSettings:', pixelSettings);
   } catch (error) {
     console.error('Error loading pixel settings:', error);
   }
