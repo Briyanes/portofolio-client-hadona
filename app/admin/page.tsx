@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
   const recentCaseStudies = caseStudies.slice(0, 6);
 
   return (
-    <AdminProtectedLayout showHeader={false}>
+    <AdminProtectedLayout>
       <div className="space-y-8 w-full max-w-full">
       {/* Page Header */}
       <div>
