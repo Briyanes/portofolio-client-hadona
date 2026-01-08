@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Input } from '@/components/ui/Input';
 
@@ -27,6 +27,20 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // Sync initialData to formData when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        meta_pixel_id: initialData.meta_pixel_id || '',
+        ig_pixel_id: initialData.ig_pixel_id || '',
+        gtag_id: initialData.gtag_id || '',
+        is_meta_enabled: initialData.is_meta_enabled || false,
+        is_ig_enabled: initialData.is_ig_enabled || false,
+        is_gtag_enabled: initialData.is_gtag_enabled || false,
+      });
+    }
+  }, [initialData]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -45,6 +59,11 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
       }
 
       toast.success('Pixel settings saved successfully!');
+
+      // Refresh page to show updated data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error('Error saving pixel settings:', error);
       toast.error('Failed to save pixel settings');

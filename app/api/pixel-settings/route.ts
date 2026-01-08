@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { updatePixelSettings } from '@/lib/supabase-queries';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,6 +52,10 @@ export async function POST(request: NextRequest) {
       is_ig_enabled,
       is_gtag_enabled,
     });
+
+    // Revalidate settings page to clear cache
+    revalidatePath('/admin/settings');
+    revalidatePath('/api/pixel-settings');
 
     return NextResponse.json({
       success: true,
