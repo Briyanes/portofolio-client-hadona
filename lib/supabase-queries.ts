@@ -363,6 +363,7 @@ export async function getPixelSettings() {
   if (error) {
     if (error.code === 'PGRST116') {
       // No settings found, return defaults
+      console.log('No pixel settings found, returning defaults');
       return {
         meta_pixel_id: null,
         ig_pixel_id: null,
@@ -376,6 +377,7 @@ export async function getPixelSettings() {
     throw error;
   }
 
+  console.log('Fetched pixel settings:', data);
   return data;
 }
 
