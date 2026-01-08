@@ -16,9 +16,11 @@ export async function POST(request: NextRequest) {
       meta_pixel_id,
       ig_pixel_id,
       gtag_id,
+      gtm_id,
       is_meta_enabled,
       is_ig_enabled,
       is_gtag_enabled,
+      is_gtm_enabled,
     } = body;
 
     // Validate
@@ -43,14 +45,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (is_gtm_enabled && !gtm_id) {
+      return NextResponse.json(
+        { error: 'GTM ID is required when Google Tag Manager is enabled' },
+        { status: 400 }
+      );
+    }
+
     // Update settings
     const settings = await updatePixelSettings({
       meta_pixel_id: meta_pixel_id || null,
       ig_pixel_id: ig_pixel_id || null,
       gtag_id: gtag_id || null,
+      gtm_id: gtm_id || null,
       is_meta_enabled,
       is_ig_enabled,
       is_gtag_enabled,
+      is_gtm_enabled,
     });
 
     // Revalidate settings page to clear cache

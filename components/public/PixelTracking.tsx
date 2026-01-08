@@ -7,18 +7,22 @@ interface PixelTrackingProps {
   metaPixelId?: string | null;
   igPixelId?: string | null;
   gtagId?: string | null;
+  gtmId?: string | null;
   isMetaEnabled?: boolean;
   isIgEnabled?: boolean;
   isGtagEnabled?: boolean;
+  isGtmEnabled?: boolean;
 }
 
 export function PixelTracking({
   metaPixelId,
   igPixelId,
   gtagId,
+  gtmId,
   isMetaEnabled,
   isIgEnabled,
   isGtagEnabled,
+  isGtmEnabled,
 }: PixelTrackingProps) {
   // Track page view on mount
   useEffect(() => {
@@ -101,7 +105,7 @@ export function PixelTracking({
         </>
       )}
 
-      {/* Google Analytics */}
+      {/* Google Analytics (GA4) */}
       {isGtagEnabled && gtagId && (
         <>
           <Script
@@ -117,6 +121,19 @@ export function PixelTracking({
             `}
           </Script>
         </>
+      )}
+
+      {/* Google Tag Manager (GTM) */}
+      {isGtmEnabled && gtmId && (
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${gtmId}');
+          `}
+        </Script>
       )}
     </>
   );

@@ -368,9 +368,11 @@ export async function getPixelSettings() {
         meta_pixel_id: null,
         ig_pixel_id: null,
         gtag_id: null,
+        gtm_id: null,
         is_meta_enabled: false,
         is_ig_enabled: false,
         is_gtag_enabled: false,
+        is_gtm_enabled: false,
       };
     }
     console.error('Error fetching pixel settings:', error);
@@ -385,9 +387,11 @@ export async function updatePixelSettings(settings: {
   meta_pixel_id?: string | null;
   ig_pixel_id?: string | null;
   gtag_id?: string | null;
+  gtm_id?: string | null;
   is_meta_enabled?: boolean;
   is_ig_enabled?: boolean;
   is_gtag_enabled?: boolean;
+  is_gtm_enabled?: boolean;
 }) {
   // Check if settings exist
   const { data: existing } = await supabaseAdmin

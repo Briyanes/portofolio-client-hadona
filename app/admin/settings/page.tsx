@@ -10,9 +10,11 @@ export default async function AdminSettingsPage() {
     meta_pixel_id: null,
     ig_pixel_id: null,
     gtag_id: null,
+    gtm_id: null,
     is_meta_enabled: false,
     is_ig_enabled: false,
     is_gtag_enabled: false,
+    is_gtm_enabled: false,
   };
 
   try {

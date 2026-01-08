@@ -9,9 +9,11 @@ interface PixelSettingsFormProps {
     meta_pixel_id: string | null;
     ig_pixel_id: string | null;
     gtag_id: string | null;
+    gtm_id: string | null;
     is_meta_enabled: boolean;
     is_ig_enabled: boolean;
     is_gtag_enabled: boolean;
+    is_gtm_enabled: boolean;
   };
 }
 
@@ -20,9 +22,11 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
     meta_pixel_id: initialData?.meta_pixel_id || '',
     ig_pixel_id: initialData?.ig_pixel_id || '',
     gtag_id: initialData?.gtag_id || '',
+    gtm_id: initialData?.gtm_id || '',
     is_meta_enabled: initialData?.is_meta_enabled || false,
     is_ig_enabled: initialData?.is_ig_enabled || false,
     is_gtag_enabled: initialData?.is_gtag_enabled || false,
+    is_gtm_enabled: initialData?.is_gtm_enabled || false,
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +38,11 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
         meta_pixel_id: initialData.meta_pixel_id || '',
         ig_pixel_id: initialData.ig_pixel_id || '',
         gtag_id: initialData.gtag_id || '',
+        gtm_id: initialData.gtm_id || '',
         is_meta_enabled: initialData.is_meta_enabled || false,
         is_ig_enabled: initialData.is_ig_enabled || false,
         is_gtag_enabled: initialData.is_gtag_enabled || false,
+        is_gtm_enabled: initialData.is_gtm_enabled || false,
       });
     }
   }, [initialData]);
@@ -183,6 +189,44 @@ export function PixelSettingsForm({ initialData }: PixelSettingsFormProps) {
               onChange={(e) => setFormData({ ...formData, gtag_id: e.target.value })}
               helperText="Format: G-XXXXXXXXXX (found in GA4 Admin → Data Streams)"
               required={formData.is_gtag_enabled}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Google Tag Manager Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+              <i className="bi bi-google text-blue-600 text-xl"></i>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Google Tag Manager (GTM)</h3>
+              <p className="text-sm text-gray-600">Manage all tracking tags with GTM container</p>
+            </div>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.is_gtm_enabled}
+              onChange={(e) => setFormData({ ...formData, is_gtm_enabled: e.target.checked })}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+
+        {formData.is_gtm_enabled && (
+          <div className="ml-13 pl-13">
+            <Input
+              label="GTM Container ID"
+              name="gtm_id"
+              placeholder="e.g., GTM-XXXXXXX"
+              value={formData.gtm_id}
+              onChange={(e) => setFormData({ ...formData, gtm_id: e.target.value })}
+              helperText="Format: GTM-XXXXXXX (found in GTM Admin → Install GTM)"
+              required={formData.is_gtm_enabled}
             />
           </div>
         )}
