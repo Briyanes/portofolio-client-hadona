@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { CategoryFilter } from '@/components/public/CategoryFilter';
 import { SearchBar } from '@/components/public/SearchBar';
 import { CaseStudyCard } from '@/components/public/CaseStudyCard';
@@ -16,6 +16,23 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Reference to the case studies section for scrolling
+  const caseStudiesSectionRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to case studies section
+  const scrollToCaseStudies = () => {
+    if (caseStudiesSectionRef.current) {
+      const offset = 80; // Header height offset
+      const elementPosition = caseStudiesSectionRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Responsive items per page
   const itemsPerPage = useMemo(() => {
     if (typeof window !== 'undefined') {
@@ -28,21 +45,22 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
 
   // Recalculate items per page on resize
   useEffect(() => {
+    let resizeTimer: NodeJS.Timeout;
+
     const handleResize = () => {
-      if (window.innerWidth >= 1024) return 9;
-      if (window.innerWidth >= 768) return 6;
-      return 4;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        // Reset to page 1 when resize with debounce
+        setCurrentPage(1);
+      }, 250); // Debounce by 250ms to prevent false triggers
     };
 
-    const resizeHandler = () => {
-      handleResize();
-      // Reset to page 1 when resize
-      setCurrentPage(1);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
     };
-
-    window.addEventListener('resize', resizeHandler);
-
-    return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
   // Filter case studies based on selected category and search query
@@ -56,10 +74,16 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
     return matchesCategory && matchesSearch;
   });
 
-  // Reset to page 1 when filter changes
+  // Reset to page 1 and scroll when filter changes
   useEffect(() => {
     setCurrentPage(1);
+    scrollToCaseStudies();
   }, [selectedCategory, searchQuery]);
+
+  // Scroll to case studies section when page changes
+  useEffect(() => {
+    scrollToCaseStudies();
+  }, [currentPage]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCaseStudies.length / itemsPerPage);
@@ -86,7 +110,10 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
       </section>
 
       {/* 8. Case Studies Grid */}
-      <section className="section-container py-4 md:py-6 min-h-[400px]">
+      <section
+        ref={caseStudiesSectionRef}
+        className="section-container py-4 md:py-6 min-h-[400px]"
+      >
         {/* Header */}
         <div className="mb-4 md:mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
           <div>
