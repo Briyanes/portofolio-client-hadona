@@ -187,16 +187,45 @@ export function VideoEmbedForm({
             <i className={`bi ${getPlatformIcon(initialData.platform)}`}></i>
             Preview Video
           </h2>
-          <div className="flex justify-center">
-            <div className="w-full max-w-[350px] aspect-[9/16] bg-gray-100 rounded-xl overflow-hidden">
-              <iframe
-                src={getEmbedUrl(initialData.video_url, initialData.platform)}
-                className="w-full h-full"
-                frameBorder="0"
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              />
+          <div className="flex flex-col items-center gap-4">
+            {/* Info tentang embed */}
+            <div className="w-full max-w-md p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800 flex items-start gap-2">
+                <i className="bi bi-info-circle mt-0.5"></i>
+                <span>
+                  {initialData.platform === 'instagram' 
+                    ? 'Instagram membatasi preview embed. Video akan tampil dengan benar di homepage.'
+                    : initialData.platform === 'tiktok'
+                    ? 'TikTok embed memerlukan script khusus. Video akan tampil dengan benar di homepage.'
+                    : 'Preview mungkin tidak tersedia untuk beberapa video.'}
+                </span>
+              </p>
             </div>
+            
+            {/* Link langsung ke video */}
+            <a
+              href={initialData.video_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg"
+            >
+              <i className={`bi ${getPlatformIcon(initialData.platform)} text-lg`}></i>
+              Lihat Video di {initialData.platform.charAt(0).toUpperCase() + initialData.platform.slice(1)}
+              <i className="bi bi-box-arrow-up-right"></i>
+            </a>
+
+            {/* Preview iframe untuk YouTube (biasanya work) */}
+            {initialData.platform === 'youtube' && (
+              <div className="w-full max-w-[560px] aspect-video bg-gray-100 rounded-xl overflow-hidden">
+                <iframe
+                  src={getEmbedUrl(initialData.video_url, initialData.platform)}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

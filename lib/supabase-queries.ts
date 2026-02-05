@@ -447,17 +447,25 @@ export async function getActiveVideoEmbeds() {
 }
 
 // Get featured video embeds for homepage
-export async function getFeaturedVideoEmbeds(limit: number = 10) {
-  const { data, error } = await supabaseAdmin
-    .from('video_embeds')
-    .select('*')
-    .eq('is_active', true)
-    .eq('is_featured', true)
-    .order('display_order', { ascending: true })
-    .limit(limit);
+export async function getFeaturedVideoEmbeds(limit: number = 10): Promise<VideoEmbed[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('video_embeds')
+      .select('*')
+      .eq('is_active', true)
+      .eq('is_featured', true)
+      .order('display_order', { ascending: true })
+      .limit(limit);
 
-  if (error) throw error;
-  return data as VideoEmbed[];
+    if (error) {
+      console.error('Error fetching featured video embeds:', error);
+      return [];
+    }
+    return data as VideoEmbed[];
+  } catch (error) {
+    console.error('Failed to fetch video embeds:', error);
+    return [];
+  }
 }
 
 // ADMIN: Get all video embeds

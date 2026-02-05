@@ -210,7 +210,7 @@ export function VideoEmbedsSection({
           onClick={() => setActiveVideo(null)}
         >
           <div 
-            className="relative w-full max-w-[400px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-[400px] bg-black rounded-2xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -221,21 +221,48 @@ export function VideoEmbedsSection({
               <i className="bi bi-x-lg"></i>
             </button>
 
-            {/* Video Iframe */}
-            <iframe
-              src={getEmbedUrl(activeVideo.video_url, activeVideo.platform)}
-              className="w-full h-full"
-              frameBorder="0"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            />
-          </div>
+            {/* Video Content */}
+            {activeVideo.platform === 'youtube' ? (
+              // YouTube embed works well
+              <div className="aspect-video">
+                <iframe
+                  src={getEmbedUrl(activeVideo.video_url, activeVideo.platform)}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
+            ) : (
+              // Instagram/TikTok - show link instead of blocked iframe
+              <div className="aspect-[9/16] flex flex-col items-center justify-center p-6 bg-gradient-to-br from-gray-900 to-gray-800">
+                {/* Platform Icon */}
+                <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${getPlatformGradient(activeVideo.platform)} flex items-center justify-center mb-6`}>
+                  <i className={`bi ${getPlatformIcon(activeVideo.platform)} text-4xl text-white`}></i>
+                </div>
 
-          {/* Video Info */}
-          <div className="absolute bottom-8 left-0 right-0 text-center text-white">
-            <h3 className="text-xl font-bold mb-1">{activeVideo.title}</h3>
-            {activeVideo.client_name && (
-              <p className="text-gray-300">{activeVideo.client_name}</p>
+                {/* Video Title */}
+                <h3 className="text-xl font-bold text-white text-center mb-2">{activeVideo.title}</h3>
+                {activeVideo.client_name && (
+                  <p className="text-gray-400 mb-6">{activeVideo.client_name}</p>
+                )}
+
+                {/* Watch on Platform Button */}
+                <a
+                  href={activeVideo.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${getPlatformGradient(activeVideo.platform)} text-white rounded-xl font-bold hover:scale-105 transition-transform shadow-lg`}
+                >
+                  <i className={`bi ${getPlatformIcon(activeVideo.platform)} text-xl`}></i>
+                  Tonton di {activeVideo.platform.charAt(0).toUpperCase() + activeVideo.platform.slice(1)}
+                  <i className="bi bi-box-arrow-up-right"></i>
+                </a>
+
+                <p className="text-gray-500 text-sm mt-4">
+                  Video akan terbuka di tab baru
+                </p>
+              </div>
             )}
           </div>
         </div>
