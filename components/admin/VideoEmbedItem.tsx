@@ -14,9 +14,19 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleThumbnailClick = () => {
+    console.log('Thumbnail button clicked, opening file dialog...');
+    fileInputRef.current?.click();
+  };
+
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input changed');
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+    console.log('File selected:', file.name, file.type, file.size);
 
     // Validation
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -34,6 +44,7 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
     setIsUploading(true);
 
     try {
+      console.log('Starting upload...');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', 'video-thumbnails');
@@ -44,14 +55,19 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
         body: formData,
       });
 
+      console.log('Upload response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Upload error:', errorData);
         throw new Error(errorData.error || 'Upload failed');
       }
 
       const data = await response.json();
+      console.log('Upload success:', data);
       onUpdate(index, 'thumbnail_url', data.url);
     } catch (err: unknown) {
+      console.error('Upload exception:', err);
       const errorMessage = err instanceof Error ? err.message : 'Gagal mengupload gambar';
       alert(errorMessage);
     } finally {
@@ -96,9 +112,9 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
           ) : (
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={handleThumbnailClick}
               disabled={isUploading}
-              className="w-20 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-1 hover:border-hadona-primary hover:bg-purple-50 transition-colors"
+              className="w-20 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-1 hover:border-hadona-primary hover:bg-purple-50 transition-colors cursor-pointer"
             >
               {isUploading ? (
                 <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
