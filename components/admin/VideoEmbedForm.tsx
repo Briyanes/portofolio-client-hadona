@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useTransition, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -62,11 +62,56 @@ export function VideoEmbedForm({
   isSubmitting = false,
 }: VideoEmbedFormProps) {
   const [isPending, startTransition] = useTransition();
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '');
+  const [isFetchingThumbnail, setIsFetchingThumbnail] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
+
+  // Auto-fetch thumbnail from video URL
+  const handleFetchThumbnail = async () => {
+    if (!formRef.current) return;
+    
+    const formData = new FormData(formRef.current);
+    const videoUrl = formData.get('video_url') as string;
+    const platform = formData.get('platform') as string;
+
+    if (!videoUrl) {
+      alert('Masukkan URL video terlebih dahulu');
+      return;
+    }
+
+    setIsFetchingThumbnail(true);
+    try {
+      const response = await fetch('/api/fetch-video-thumbnail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_url: videoUrl, platform }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.thumbnail_url) {
+        setThumbnailUrl(data.thumbnail_url);
+        alert('Thumbnail berhasil diambil!');
+      } else {
+        alert('Tidak dapat mengambil thumbnail otomatis. Silakan upload manual.');
+      }
+    } catch (error) {
+      console.error('Error fetching thumbnail:', error);
+      alert('Gagal mengambil thumbnail. Silakan upload manual.');
+    } finally {
+      setIsFetchingThumbnail(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    
+    // If we have auto-fetched thumbnail, add it to formData
+    if (thumbnailUrl && !formData.get('thumbnail_url')) {
+      formData.set('thumbnail_url', thumbnailUrl);
+    }
 
     startTransition(async () => {
       try {
@@ -87,7 +132,7 @@ export function VideoEmbedForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 w-full">
       <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Informasi Video</h2>
         <div className="space-y-4">
@@ -136,19 +181,75 @@ export function VideoEmbedForm({
             rows={3}
           />
 
-          {/* Thumbnail Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Thumbnail Video (Opsional)
-            </label>
-            <p className="text-xs text-gray-500 mb-2">
-              Upload gambar thumbnail untuk video. Disarankan ukuran 9:16 (portrait) seperti format Reels/TikTok.
-            </p>
-            <ImageUpload
-              name="thumbnail_url"
-              currentImage={initialData?.thumbnail_url || ''}
-              folder="video-thumbnails"
-            />
+          {/* Thumbnail Section */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Thumbnail Video
+              </label>
+              <p className="text-xs text-gray-500 mb-3">
+                Klik tombol "Ambil Otomatis" untuk mengambil thumbnail dari video, atau upload manual.
+              </p>
+              
+              {/* Auto-fetch button */}
+              <button
+                type="button"
+                onClick={handleFetchThumbnail}
+                disabled={isFetchingThumbnail}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+              >
+                {isFetchingThumbnail ? (
+                  <>
+                    <i className="bi bi-arrow-repeat animate-spin"></i>
+                    Mengambil Thumbnail...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-magic"></i>
+                    Ambil Thumbnail Otomatis
+                  </>
+                )}
+              </button>
+
+              {/* Auto-fetched thumbnail preview */}
+              {thumbnailUrl && (
+                <div className="mb-4">
+                  <p className="text-xs text-green-600 font-medium mb-2 flex items-center gap-1">
+                    <i className="bi bi-check-circle"></i>
+                    Thumbnail berhasil diambil:
+                  </p>
+                  <div className="relative w-32 aspect-[9/16] rounded-lg overflow-hidden border-2 border-green-500 shadow-md">
+                    <img
+                      src={thumbnailUrl}
+                      alt="Auto-fetched thumbnail"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setThumbnailUrl('')}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      <i className="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <input type="hidden" name="thumbnail_url" value={thumbnailUrl} />
+                </div>
+              )}
+
+              {/* Manual upload option */}
+              {!thumbnailUrl && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Atau upload manual (disarankan ukuran 9:16 portrait):
+                  </p>
+                  <ImageUpload
+                    name="thumbnail_url"
+                    currentImage={initialData?.thumbnail_url || ''}
+                    folder="video-thumbnails"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
