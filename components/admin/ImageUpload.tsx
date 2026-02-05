@@ -88,7 +88,7 @@ export function ImageUpload({
       {/* Hidden input to store the URL value */}
       <input
         type="hidden"
-        name={`${name}_url`}
+        name={name}
         value={preview || ''}
       />
 
