@@ -244,8 +244,8 @@ export function VideoEmbedForm({
                   </p>
                   <ImageUpload
                     name="thumbnail_url"
-                    currentImage={initialData?.thumbnail_url || ''}
-                    folder="video-thumbnails"
+                    label=""
+                    defaultValue={initialData?.thumbnail_url || ''}
                   />
                 </div>
               )}
