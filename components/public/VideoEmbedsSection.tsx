@@ -178,7 +178,12 @@ export function VideoEmbedsSection({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className={`w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} opacity-20`}></div>
+                    <div className={`w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} flex items-center justify-center`}>
+                      <div className="text-center">
+                        <i className={`bi ${getPlatformIcon(video.platform)} text-6xl text-white/50 mb-2`}></i>
+                        <p className="text-white/50 text-xs font-medium px-4">{video.title}</p>
+                      </div>
+                    </div>
                   )}
                 </div>
 

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import type { VideoEmbedFormData } from '@/lib/types';
 
 interface VideoEmbedFormProps {
@@ -135,12 +136,20 @@ export function VideoEmbedForm({
             rows={3}
           />
 
-          <Input
-            name="thumbnail_url"
-            label="URL Thumbnail (Opsional)"
-            defaultValue={initialData?.thumbnail_url || ''}
-            placeholder="https://example.com/thumbnail.jpg"
-          />
+          {/* Thumbnail Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Thumbnail Video (Opsional)
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Upload gambar thumbnail untuk video. Disarankan ukuran 9:16 (portrait) seperti format Reels/TikTok.
+            </p>
+            <ImageUpload
+              name="thumbnail_url"
+              currentImage={initialData?.thumbnail_url || ''}
+              folder="video-thumbnails"
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
