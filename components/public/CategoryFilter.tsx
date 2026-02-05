@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import type { Category } from '@/lib/types';
 
 interface CategoryFilterProps {
@@ -9,12 +10,21 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ categories, selectedCategory, onCategoryChange }: CategoryFilterProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Add id="kategori" only after initial render to prevent auto-scroll on page load
+  useEffect(() => {
+    if (sectionRef.current) {
+      sectionRef.current.id = 'kategori';
+    }
+  }, []);
+
   const handleCategoryClick = (categorySlug: string | null) => {
     onCategoryChange(categorySlug);
   };
 
   return (
-    <section id="kategori" className="py-6 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/50">
+    <section ref={sectionRef} className="py-6 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
