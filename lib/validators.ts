@@ -27,6 +27,7 @@ export const caseStudySchema = z.object({
     url: z.string(),
     platform: z.enum(['instagram', 'tiktok', 'youtube']),
     title: z.string().optional(),
+    thumbnail_url: z.string().optional(),
   })).optional(),
   metrics: z.record(z.string()).optional(),
   meta_title: optionalString(),

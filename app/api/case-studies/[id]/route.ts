@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     // Get session from cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -81,7 +81,7 @@ export async function PUT(
 ) {
   try {
     // Get session from cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -170,6 +170,20 @@ export async function PUT(
       }
     }
 
+    // Parse video_embeds
+    let video_embeds;
+    const video_embeds_str = getString('video_embeds');
+    if (video_embeds_str && video_embeds_str.trim() !== '') {
+      try {
+        video_embeds = JSON.parse(video_embeds_str);
+        if (!Array.isArray(video_embeds)) {
+          video_embeds = [];
+        }
+      } catch (e) {
+        video_embeds = [];
+      }
+    }
+
     // Prepare data for validation
     const rawData = {
       title: getString('title').trim(),
@@ -197,6 +211,7 @@ export async function PUT(
       instagram_url: getString('instagram_url').trim(),
       facebook_url: getString('facebook_url').trim(),
       services: getString('services').trim(),
+      video_embeds: video_embeds || [],
     };
 
     // Validate with Zod
@@ -256,7 +271,7 @@ export async function DELETE(
 ) {
   try {
     // Get session from cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
