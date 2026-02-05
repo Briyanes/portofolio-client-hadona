@@ -245,14 +245,27 @@ export function VideoEmbedForm({
                 Thumbnail Video
               </label>
               
+              {/* Platform-specific info */}
+              {platform === 'instagram' && !thumbnailUrl && !isFetchingThumbnail && (
+                <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                  <p className="text-sm text-purple-800 flex items-start gap-2">
+                    <i className="bi bi-info-circle mt-0.5"></i>
+                    <span>
+                      <strong>Tips Instagram:</strong> Jika auto-fetch gagal, buka video di Instagram → 
+                      Screenshot frame terbaik → Upload di bawah.
+                    </span>
+                  </p>
+                </div>
+              )}
+              
               {/* Loading state */}
               {isFetchingThumbnail && (
                 <div className="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                     <div>
-                      <p className="text-sm font-medium text-purple-700">Mengambil thumbnail...</p>
-                      <p className="text-xs text-purple-500">Thumbnail akan otomatis muncul setelah selesai</p>
+                      <p className="text-sm font-medium text-purple-700">Mengambil thumbnail dari {platform}...</p>
+                      <p className="text-xs text-purple-500">Tunggu sebentar, sedang mengambil gambar...</p>
                     </div>
                   </div>
                 </div>
