@@ -30,7 +30,6 @@ export async function POST(request: Request) {
       const match = video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&\s]+)/);
       if (match) {
         const videoId = match[1];
-        // YouTube provides multiple thumbnail sizes - use maxres first, fallback to hq
         sourceUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       }
     } else if (platform === 'instagram') {
@@ -46,8 +45,6 @@ export async function POST(request: Request) {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': 'https://www.instagram.com/',
           },
         });
 
@@ -78,7 +75,7 @@ export async function POST(request: Request) {
         }
       } catch (downloadError) {
         console.log('Failed to download/upload thumbnail:', downloadError);
-        // For YouTube, return direct URL as fallback (YouTube allows hotlinking)
+        // For YouTube, return direct URL as fallback
         if (platform === 'youtube') {
           thumbnailUrl = sourceUrl;
         }
@@ -92,16 +89,16 @@ export async function POST(request: Request) {
         { 
           success: false, 
           error: platform === 'instagram' 
-            ? 'Instagram membatasi akses thumbnail otomatis. Silakan screenshot video dari Instagram dan upload manual.'
+            ? 'Instagram membatasi akses. Silakan screenshot dan upload manual.'
             : 'Could not fetch thumbnail automatically' 
         },
         { status: 404 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching thumbnail:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch thumbnail' },
+      { error: 'Failed to fetch thumbnail' },
       { status: 500 }
     );
   }
@@ -110,40 +107,48 @@ export async function POST(request: Request) {
 // Special function to try multiple methods for Instagram
 async function fetchInstagramThumbnail(url: string): Promise<string | null> {
   // Extract shortcode from URL
-  // URLs can be: /reel/ABC123/ or /p/ABC123/ or /reels/ABC123/
   const shortcodeMatch = url.match(/\/(reel|p|reels)\/([A-Za-z0-9_-]+)/);
   if (!shortcodeMatch) return null;
   
   const shortcode = shortcodeMatch[2];
 
-  // Method 1: Try Instagram's embed page to extract thumbnail
+  // Method 1: Try Instagram oEmbed API (official - may work for public posts)
+  try {
+    const oembedUrl = `https://api.instagram.com/oembed?url=${encodeURIComponent(url)}`;
+    const response = await fetch(oembedUrl);
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.thumbnail_url) {
+        return data.thumbnail_url;
+      }
+    }
+  } catch (e) {
+    console.log('Instagram oEmbed failed:', e);
+  }
+
+  // Method 2: Try embed page scraping with Googlebot
   try {
     const embedUrl = `https://www.instagram.com/p/${shortcode}/embed/`;
     const response = await fetch(embedUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
       },
     });
 
     if (response.ok) {
       const html = await response.text();
       
-      // Try to find image URL in the embed HTML
-      // Look for video poster or image src
+      // Look for display_url or thumbnail in the HTML
       const patterns = [
-        /class="EmbeddedMediaImage"[^>]*src="([^"]+)"/,
         /"display_url":"([^"]+)"/,
+        /"thumbnail_src":"([^"]+)"/,
         /poster="([^"]+)"/,
-        /src="(https:\/\/[^"]*cdninstagram[^"]*\.jpg[^"]*)"/,
-        /<img[^>]*class="[^"]*"[^>]*src="(https:\/\/[^"]+)"/,
       ];
 
       for (const pattern of patterns) {
         const match = html.match(pattern);
         if (match && match[1]) {
-          // Decode unicode escapes if present
           const imageUrl = match[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
           if (imageUrl.startsWith('https://')) {
             return imageUrl;
@@ -152,31 +157,27 @@ async function fetchInstagramThumbnail(url: string): Promise<string | null> {
       }
     }
   } catch (e) {
-    console.log('Instagram embed method failed:', e);
+    console.log('Embed scraping failed:', e);
   }
 
-  // Method 2: Try the direct page with different user agent
+  // Method 3: Try with Facebook crawler user-agent
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
-        'Accept': 'text/html',
+        'User-Agent': 'facebookexternalhit/1.1',
       },
     });
 
     if (response.ok) {
       const html = await response.text();
-      
-      // Look for og:image meta tag
       const ogMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/);
       if (ogMatch && ogMatch[1]) {
         return ogMatch[1];
       }
     }
   } catch (e) {
-    console.log('Instagram direct method failed:', e);
+    console.log('Facebook crawler failed:', e);
   }
 
   return null;
 }
-// trigger redeploy Thu Feb  5 23:27:37 WIB 2026

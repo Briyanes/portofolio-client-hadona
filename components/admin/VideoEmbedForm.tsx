@@ -93,19 +93,21 @@ export function VideoEmbedForm({
     }
   }, [isFetchingThumbnail]);
 
-  // Auto-fetch thumbnail when URL changes (with debounce) - only for new videos
+  // Auto-fetch thumbnail when URL changes (with debounce) - only for TikTok and YouTube
   useEffect(() => {
+    // Don't auto-fetch for Instagram (requires manual upload)
+    if (platform === 'instagram') return;
+    
     // Don't auto-fetch if:
     // - Already have thumbnail
     // - No URL entered
     // - Already fetching
     // - This is an edit (has initialData with thumbnail)
     if (thumbnailUrl || !videoUrl || isFetchingThumbnail) return;
-    if (initialData?.thumbnail_url) return; // Don't auto-fetch for existing videos
+    if (initialData?.thumbnail_url) return;
     
     // Check if URL looks valid
-    const isValidUrl = videoUrl.includes('instagram.com') || 
-                       videoUrl.includes('tiktok.com') || 
+    const isValidUrl = videoUrl.includes('tiktok.com') || 
                        videoUrl.includes('youtube.com') ||
                        videoUrl.includes('youtu.be');
     
@@ -113,7 +115,7 @@ export function VideoEmbedForm({
 
     const timer = setTimeout(() => {
       fetchThumbnail(videoUrl, platform);
-    }, 1500); // Wait 1.5 seconds after user stops typing
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [videoUrl, platform, thumbnailUrl, fetchThumbnail, isFetchingThumbnail, initialData?.thumbnail_url]);
@@ -254,11 +256,20 @@ export function VideoEmbedForm({
               {platform === 'instagram' && !thumbnailUrl && !isFetchingThumbnail && (
                 <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
                   <p className="text-sm text-purple-800 flex items-start gap-2">
-                    <i className="bi bi-info-circle mt-0.5"></i>
+                    <i className="bi bi-instagram text-lg"></i>
                     <span>
-                      <strong>Tips Instagram:</strong> Jika auto-fetch gagal, buka video di Instagram → 
-                      Screenshot frame terbaik → Upload di bawah.
+                      <strong>Instagram Reels:</strong> Instagram tidak menyediakan API publik untuk thumbnail. 
+                      Silakan <strong>screenshot frame terbaik</strong> dari video dan upload di bawah.
                     </span>
+                  </p>
+                </div>
+              )}
+              
+              {(platform === 'tiktok' || platform === 'youtube') && !thumbnailUrl && !isFetchingThumbnail && (
+                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 flex items-center gap-2">
+                    <i className="bi bi-check-circle"></i>
+                    <span>Thumbnail akan otomatis diambil setelah URL video diisi.</span>
                   </p>
                 </div>
               )}
@@ -304,25 +315,27 @@ export function VideoEmbedForm({
               {/* Manual options - only show when no thumbnail and not loading */}
               {!thumbnailUrl && !isFetchingThumbnail && (
                 <div className="space-y-3">
-                  <p className="text-xs text-gray-500">
-                    Thumbnail akan otomatis diambil setelah URL video diisi. Atau gunakan opsi di bawah:
-                  </p>
-                  
-                  {/* Manual fetch button */}
-                  <button
-                    type="button"
-                    onClick={handleFetchThumbnail}
-                    disabled={!videoUrl}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <i className="bi bi-magic"></i>
-                    Ambil Thumbnail Otomatis
+                  {/* Manual fetch button - only for TikTok/YouTube */}
+                  {platform !== 'instagram' && (
+                    <button
+                      type="button"
+                      onClick={handleFetchThumbnail}
+                      disabled={!videoUrl}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <i className="bi bi-magic"></i>
+                      Ambil Thumbnail Otomatis
                   </button>
 
+                    </button>
+                  )}
+
                   {/* Manual upload */}
-                  <div className="pt-2">
+                  <div className={platform !== 'instagram' ? 'pt-2' : ''}>
                     <p className="text-xs text-gray-500 mb-2">
-                      Atau upload manual (disarankan ukuran 9:16 portrait):
+                      {platform === 'instagram' 
+                        ? 'Upload screenshot dari video Instagram (ukuran 9:16 portrait):'
+                        : 'Atau upload manual (disarankan ukuran 9:16 portrait):'}
                     </p>
                     <ImageUpload
                       name="thumbnail_url"
