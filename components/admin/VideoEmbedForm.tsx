@@ -1,11 +1,10 @@
 'use client';
 
-import { useTransition, useState, useRef, useEffect, useCallback } from 'react';
+import { useTransition, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import type { VideoEmbedFormData } from '@/lib/types';
 
@@ -20,13 +19,11 @@ function getEmbedUrl(url: string, platform: string): string {
   if (!url) return '';
   
   if (platform === 'instagram') {
-    // Instagram: add /embed/ if not present
     if (url.includes('/embed/')) return url;
     return url.replace(/\/?$/, '/embed/');
   }
   
   if (platform === 'tiktok') {
-    // TikTok: extract video ID and create embed URL
     const match = url.match(/video\/(\d+)/);
     if (match) {
       return `https://www.tiktok.com/embed/v2/${match[1]}`;
@@ -35,7 +32,6 @@ function getEmbedUrl(url: string, platform: string): string {
   }
   
   if (platform === 'youtube') {
-    // YouTube: convert watch URL to embed URL
     const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
     if (match) {
       return `https://www.youtube.com/embed/${match[1]}`;
@@ -62,108 +58,13 @@ export function VideoEmbedForm({
   isSubmitting = false,
 }: VideoEmbedFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '');
-  const [isFetchingThumbnail, setIsFetchingThumbnail] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(initialData?.video_url || '');
   const [platform, setPlatform] = useState(initialData?.platform || 'instagram');
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
 
-  // Auto-fetch thumbnail function
-  const fetchThumbnail = useCallback(async (url: string, plat: string) => {
-    if (!url || isFetchingThumbnail) return;
-    
-    setIsFetchingThumbnail(true);
-    try {
-      const response = await fetch('/api/fetch-video-thumbnail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_url: url, platform: plat }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success && data.thumbnail_url) {
-        setThumbnailUrl(data.thumbnail_url);
-      }
-    } catch (error) {
-      console.error('Auto-fetch thumbnail failed:', error);
-    } finally {
-      setIsFetchingThumbnail(false);
-    }
-  }, [isFetchingThumbnail]);
-
-  // Auto-fetch thumbnail when URL changes (with debounce) - only for TikTok and YouTube
-  useEffect(() => {
-    // Don't auto-fetch for Instagram (requires manual upload)
-    if (platform === 'instagram') return;
-    
-    // Don't auto-fetch if:
-    // - Already have thumbnail
-    // - No URL entered
-    // - Already fetching
-    // - This is an edit (has initialData with thumbnail)
-    if (thumbnailUrl || !videoUrl || isFetchingThumbnail) return;
-    if (initialData?.thumbnail_url) return;
-    
-    // Check if URL looks valid
-    const isValidUrl = videoUrl.includes('tiktok.com') || 
-                       videoUrl.includes('youtube.com') ||
-                       videoUrl.includes('youtu.be');
-    
-    if (!isValidUrl) return;
-
-    const timer = setTimeout(() => {
-      fetchThumbnail(videoUrl, platform);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [videoUrl, platform, thumbnailUrl, fetchThumbnail, isFetchingThumbnail, initialData?.thumbnail_url]);
-
-  // Manual fetch thumbnail button handler
-  const handleFetchThumbnail = async () => {
-    if (!formRef.current) return;
-    
-    const formData = new FormData(formRef.current);
-    const url = formData.get('video_url') as string;
-    const plat = formData.get('platform') as string;
-
-    if (!url) {
-      alert('Masukkan URL video terlebih dahulu');
-      return;
-    }
-
-    setIsFetchingThumbnail(true);
-    try {
-      const response = await fetch('/api/fetch-video-thumbnail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_url: url, platform: plat }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success && data.thumbnail_url) {
-        setThumbnailUrl(data.thumbnail_url);
-      } else {
-        alert(data.error || 'Tidak dapat mengambil thumbnail otomatis. Silakan upload manual.');
-      }
-    } catch (error) {
-      console.error('Error fetching thumbnail:', error);
-      alert('Gagal mengambil thumbnail. Silakan upload manual.');
-    } finally {
-      setIsFetchingThumbnail(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
-    // If we have auto-fetched thumbnail, add it to formData
-    if (thumbnailUrl && !formData.get('thumbnail_url')) {
-      formData.set('thumbnail_url', thumbnailUrl);
-    }
 
     startTransition(async () => {
       try {
@@ -176,9 +77,10 @@ export function VideoEmbedForm({
 
         router.push('/admin/video-embeds');
         router.refresh();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Submit error:', error);
-        alert(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
+        const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan data';
+        alert(`Error: ${errorMessage}`);
       }
     });
   };
@@ -197,20 +99,14 @@ export function VideoEmbedForm({
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                URL Video <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                name="video_url"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                required
-                placeholder="https://www.instagram.com/reel/... atau https://www.tiktok.com/..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary focus:border-transparent"
-              />
-            </div>
+            <Input
+              name="video_url"
+              label="URL Video"
+              type="url"
+              defaultValue={initialData?.video_url || ''}
+              required
+              placeholder="https://www.instagram.com/reel/... atau https://www.tiktok.com/..."
+            />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -245,119 +141,26 @@ export function VideoEmbedForm({
             rows={3}
           />
 
-          {/* Thumbnail Section */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Thumbnail Video
-              </label>
-              
-              {/* Platform-specific info */}
-              {platform === 'instagram' && !thumbnailUrl && !isFetchingThumbnail && (
-                <div className="mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
-                  <p className="text-sm text-purple-800 flex items-start gap-2">
-                    <i className="bi bi-instagram text-lg"></i>
-                    <span>
-                      <strong>Instagram Reels:</strong> Instagram tidak menyediakan API publik untuk thumbnail. 
-                      Silakan <strong>screenshot frame terbaik</strong> dari video dan upload di bawah.
-                    </span>
-                  </p>
-                </div>
-              )}
-              
-              {(platform === 'tiktok' || platform === 'youtube') && !thumbnailUrl && !isFetchingThumbnail && (
-                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-800 flex items-center gap-2">
-                    <i className="bi bi-check-circle"></i>
-                    <span>Thumbnail akan otomatis diambil setelah URL video diisi.</span>
-                  </p>
-                </div>
-              )}
-              
-              {/* Loading state */}
-              {isFetchingThumbnail && (
-                <div className="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                    <div>
-                      <p className="text-sm font-medium text-purple-700">Mengambil thumbnail dari {platform}...</p>
-                      <p className="text-xs text-purple-500">Tunggu sebentar, sedang mengambil gambar...</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Auto-fetched thumbnail preview */}
-              {thumbnailUrl && !isFetchingThumbnail && (
-                <div className="mb-4">
-                  <p className="text-xs text-green-600 font-medium mb-2 flex items-center gap-1">
-                    <i className="bi bi-check-circle-fill"></i>
-                    Thumbnail berhasil diambil
-                  </p>
-                  <div className="relative w-40 aspect-[9/16] rounded-xl overflow-hidden border-2 border-green-500 shadow-lg">
-                    <img
-                      src={thumbnailUrl}
-                      alt="Video thumbnail"
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setThumbnailUrl('')}
-                      className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 shadow-md"
-                    >
-                      <i className="bi bi-x-lg"></i>
-                    </button>
-                  </div>
-                  <input type="hidden" name="thumbnail_url" value={thumbnailUrl} />
-                </div>
-              )}
-
-              {/* Manual options - only show when no thumbnail and not loading */}
-              {!thumbnailUrl && !isFetchingThumbnail && (
-                <div className="space-y-3">
-                  {/* Manual fetch button - only for TikTok/YouTube */}
-                  {platform !== 'instagram' && (
-                    <button
-                      type="button"
-                      onClick={handleFetchThumbnail}
-                      disabled={!videoUrl}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <i className="bi bi-magic"></i>
-                      Ambil Thumbnail Otomatis
-                  </button>
-
-                    </button>
-                  )}
-
-                  {/* Manual upload */}
-                  <div className={platform !== 'instagram' ? 'pt-2' : ''}>
-                    <p className="text-xs text-gray-500 mb-2">
-                      {platform === 'instagram' 
-                        ? 'Upload screenshot dari video Instagram (ukuran 9:16 portrait):'
-                        : 'Atau upload manual (disarankan ukuran 9:16 portrait):'}
-                    </p>
-                    <ImageUpload
-                      name="thumbnail_url"
-                      label=""
-                      defaultValue={initialData?.thumbnail_url || ''}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Thumbnail Upload */}
+          <div>
+            <ImageUpload
+              name="thumbnail_url"
+              label="Thumbnail Video"
+              defaultValue={initialData?.thumbnail_url || ''}
+            />
+            <p className="mt-2 text-xs text-gray-500">
+              💡 Tips: Screenshot frame terbaik dari video (ukuran portrait 9:16 recommended)
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Input
-                name="display_order"
-                label="Urutan Tampilan"
-                type="number"
-                defaultValue={initialData?.display_order ?? 0}
-                placeholder="0"
-              />
-            </div>
+            <Input
+              name="display_order"
+              label="Urutan Tampilan"
+              type="number"
+              defaultValue={initialData?.display_order ?? 0}
+              placeholder="0"
+            />
 
             <div className="flex items-center pt-6">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -394,20 +197,6 @@ export function VideoEmbedForm({
             Preview Video
           </h2>
           <div className="flex flex-col items-center gap-4">
-            {/* Info tentang embed */}
-            <div className="w-full max-w-md p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800 flex items-start gap-2">
-                <i className="bi bi-info-circle mt-0.5"></i>
-                <span>
-                  {initialData.platform === 'instagram' 
-                    ? 'Instagram membatasi preview embed. Video akan tampil dengan benar di homepage.'
-                    : initialData.platform === 'tiktok'
-                    ? 'TikTok embed memerlukan script khusus. Video akan tampil dengan benar di homepage.'
-                    : 'Preview mungkin tidak tersedia untuk beberapa video.'}
-                </span>
-              </p>
-            </div>
-            
             {/* Link langsung ke video */}
             <a
               href={initialData.video_url}
@@ -420,7 +209,7 @@ export function VideoEmbedForm({
               <i className="bi bi-box-arrow-up-right"></i>
             </a>
 
-            {/* Preview iframe untuk YouTube (biasanya work) */}
+            {/* Preview iframe untuk YouTube */}
             {initialData.platform === 'youtube' && (
               <div className="w-full max-w-[560px] aspect-video bg-gray-100 rounded-xl overflow-hidden">
                 <iframe
