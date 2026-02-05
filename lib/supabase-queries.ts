@@ -1,5 +1,5 @@
 import { supabaseAdmin } from './supabase-admin';
-import type { CaseStudy, Category, AdminUser, CaseStudyFilters, Testimonial, ClientLogo } from './types';
+import type { CaseStudy, Category, AdminUser, CaseStudyFilters, Testimonial, ClientLogo, VideoEmbed } from './types';
 
 // Get all published case studies with filters
 export async function getPublishedCaseStudies(filters: CaseStudyFilters = {}) {
@@ -430,4 +430,56 @@ export async function updatePixelSettings(settings: {
   }
 
   return result.data;
+}
+
+// ==================== VIDEO EMBEDS ====================
+
+// Get active video embeds for public display
+export async function getActiveVideoEmbeds() {
+  const { data, error } = await supabaseAdmin
+    .from('video_embeds')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  if (error) throw error;
+  return data as VideoEmbed[];
+}
+
+// Get featured video embeds for homepage
+export async function getFeaturedVideoEmbeds(limit: number = 10) {
+  const { data, error } = await supabaseAdmin
+    .from('video_embeds')
+    .select('*')
+    .eq('is_active', true)
+    .eq('is_featured', true)
+    .order('display_order', { ascending: true })
+    .limit(limit);
+
+  if (error) throw error;
+  return data as VideoEmbed[];
+}
+
+// ADMIN: Get all video embeds
+export async function adminGetAllVideoEmbeds() {
+  const { data, error } = await supabaseAdmin
+    .from('video_embeds')
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as VideoEmbed[];
+}
+
+// ADMIN: Get video embed by ID
+export async function adminGetVideoEmbedById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('video_embeds')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as VideoEmbed;
 }

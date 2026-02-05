@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { ImageUpload } from './ImageUpload';
 import { MultipleImageUpload } from './MultipleImageUpload';
-import { Category, CaseStudyFormData } from '@/lib/types';
+import { Category, CaseStudyFormData, CaseStudyVideoEmbed } from '@/lib/types';
 
 interface CaseStudyFormProps {
-  initialData?: Partial<CaseStudyFormData>;
+  initialData?: Partial<CaseStudyFormData> & { video_embeds?: CaseStudyVideoEmbed[] };
   categories: Category[];
   onSubmit: (data: FormData) => Promise<void | { error?: string }>;
   isSubmitting?: boolean;
@@ -25,6 +25,9 @@ export function CaseStudyForm({
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [metrics, setMetrics] = useState<Array<{ label: string; value: string }>>(
     initialData?.metrics || []
+  );
+  const [videoEmbeds, setVideoEmbeds] = useState<CaseStudyVideoEmbed[]>(
+    initialData?.video_embeds || []
   );
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -57,6 +60,21 @@ export function CaseStudyForm({
     setMetrics(metrics.filter((_, i) => i !== index));
   };
 
+  // Video embed handlers
+  const addVideoEmbed = () => {
+    setVideoEmbeds([...videoEmbeds, { url: '', platform: 'instagram', title: '' }]);
+  };
+
+  const updateVideoEmbed = (index: number, field: keyof CaseStudyVideoEmbed, value: string) => {
+    const updated = [...videoEmbeds];
+    updated[index] = { ...updated[index], [field]: value };
+    setVideoEmbeds(updated);
+  };
+
+  const removeVideoEmbed = (index: number) => {
+    setVideoEmbeds(videoEmbeds.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -80,6 +98,10 @@ export function CaseStudyForm({
       return acc;
     }, {} as Record<string, string>);
     formData.append('metrics', JSON.stringify(metricsObj));
+
+    // Add video embeds as JSON
+    const validVideoEmbeds = videoEmbeds.filter(v => v.url && v.platform);
+    formData.append('video_embeds', JSON.stringify(validVideoEmbeds));
 
     startTransition(async () => {
       try {
@@ -223,6 +245,81 @@ export function CaseStudyForm({
             defaultValues={initialData?.gallery_urls || []}
             recommendedSize="1920x1080px atau 1080x1080px"
           />
+        </div>
+      </div>
+
+      {/* Section 3.5: Video Embeds (Optional) */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 text-sm font-bold">
+              <i className="bi bi-play-circle"></i>
+            </span>
+            Video Embeds (Opsional)
+          </h2>
+          <Button type="button" variant="secondary" onClick={addVideoEmbed}>
+            <i className="bi bi-plus-lg mr-1"></i>
+            Tambah Video
+          </Button>
+        </div>
+        <p className="text-sm text-gray-600 mb-4">
+          Tambahkan video dari Instagram Reels, TikTok, atau YouTube untuk ditampilkan di halaman case study.
+        </p>
+        <div className="space-y-4">
+          {videoEmbeds.map((video, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                <div className="md:col-span-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Video</label>
+                  <input
+                    type="text"
+                    value={video.url}
+                    onChange={(e) => updateVideoEmbed(index, 'url', e.target.value)}
+                    placeholder="https://www.instagram.com/reel/..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
+                  <select
+                    value={video.platform}
+                    onChange={(e) => updateVideoEmbed(index, 'platform', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm bg-white"
+                  >
+                    <option value="instagram">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="youtube">YouTube</option>
+                  </select>
+                </div>
+                <div className="md:col-span-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Judul (Opsional)</label>
+                  <input
+                    type="text"
+                    value={video.title || ''}
+                    onChange={(e) => updateVideoEmbed(index, 'title', e.target.value)}
+                    placeholder="Deskripsi singkat video"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm"
+                  />
+                </div>
+                <div className="md:col-span-1 flex items-end">
+                  <button
+                    type="button"
+                    onClick={() => removeVideoEmbed(index)}
+                    className="w-full px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+                    title="Hapus video"
+                  >
+                    <i className="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {videoEmbeds.length === 0 && (
+            <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+              <i className="bi bi-play-circle text-4xl text-gray-300 mb-2"></i>
+              <p className="text-gray-500 text-sm">Belum ada video. Klik &quot;Tambah Video&quot; untuk menambahkan.</p>
+            </div>
+          )}
         </div>
       </div>
 

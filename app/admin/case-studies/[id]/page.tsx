@@ -58,6 +58,7 @@ export default async function EditCaseStudyPage({
               client_logo_url: caseStudy.client_logo_url || '',
               hero_image_url: caseStudy.hero_image_url || '',
               gallery_urls: caseStudy.gallery_urls || [],
+              video_embeds: caseStudy.video_embeds || [],
               metrics: caseStudy.metrics ? Object.entries(caseStudy.metrics).map(([label, value]) => ({ label, value })) : [],
               meta_title: caseStudy.meta_title || '',
               meta_description: caseStudy.meta_description || '',

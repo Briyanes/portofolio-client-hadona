@@ -61,6 +61,20 @@ export async function updateCaseStudy(id: string, formData: FormData) {
       }
     }
 
+    // Parse video_embeds
+    let video_embeds;
+    const video_embeds_str = getString('video_embeds');
+    if (video_embeds_str && video_embeds_str.trim() !== '') {
+      try {
+        video_embeds = JSON.parse(video_embeds_str);
+        if (!Array.isArray(video_embeds)) {
+          video_embeds = [];
+        }
+      } catch (e) {
+        video_embeds = [];
+      }
+    }
+
     // Prepare data for validation
     const rawData = {
       title: getString('title').trim(),
@@ -81,6 +95,7 @@ export async function updateCaseStudy(id: string, formData: FormData) {
       hero_image_url: getString('hero_image_url').trim(),
       client_logo_url: getString('client_logo_url').trim(),
       gallery_urls: gallery_urls,
+      video_embeds: video_embeds || [],
       display_order: parseInt(getString('display_order')) || 0,
       is_featured: getBoolean('is_featured'),
       is_published: getBoolean('is_published'),

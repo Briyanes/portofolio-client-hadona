@@ -23,6 +23,11 @@ export const caseStudySchema = z.object({
   client_logo_url: optionalString(),
   hero_image_url: optionalString(),
   gallery_urls: z.array(z.string()).optional(),
+  video_embeds: z.array(z.object({
+    url: z.string(),
+    platform: z.enum(['instagram', 'tiktok', 'youtube']),
+    title: z.string().optional(),
+  })).optional(),
   metrics: z.record(z.string()).optional(),
   meta_title: optionalString(),
   meta_description: optionalString(),

@@ -866,6 +866,20 @@ a {
   animation: scroll-testimonial 60s linear infinite;
 }
 
+/* Video Slider Animation - Moderate speed for video thumbnails */
+@keyframes scroll-video {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.33%);
+  }
+}
+
+.animate-scroll-video {
+  animation: scroll-video 45s linear infinite;
+}
+
 /* Smooth scrolling for drag functionality */
 .slider-track {
   cursor: grab;

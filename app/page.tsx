@@ -5,11 +5,13 @@ import { ClientLogosSection } from '@/components/public/ClientLogosSection';
 import { ServicesOverviewSection } from '@/components/public/ServicesOverviewSection';
 import { TestimonialsSection } from '@/components/public/TestimonialsSection';
 import { CaseStudiesSection } from '@/components/public/CaseStudiesSection';
+import { VideoEmbedsSection } from '@/components/public/VideoEmbedsSection';
 import {
   getPublishedCaseStudies,
   getActiveCategories,
   getFeaturedTestimonialsFromDB,
   getActiveClientLogos,
+  getFeaturedVideoEmbeds,
 } from '@/lib/supabase-queries';
 import { AGENCY_INFO, AGENCY_SERVICES } from '@/lib/constants';
 
@@ -18,16 +20,18 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [caseStudies, categories, testimonialsFromDB, clientLogos] = await Promise.all([
+  const [caseStudies, categories, testimonialsFromDB, clientLogos, videoEmbeds] = await Promise.all([
     getPublishedCaseStudies(),
     getActiveCategories(),
     getFeaturedTestimonialsFromDB(10),
     getActiveClientLogos(),
+    getFeaturedVideoEmbeds(10),
   ]);
 
   // Debug: Log data
   console.log('Client Logos Data:', clientLogos);
   console.log('Testimonials from DB:', testimonialsFromDB);
+  console.log('Video Embeds:', videoEmbeds);
 
   // Map testimonials from database to format expected by TestimonialsSection
   const testimonials = testimonialsFromDB.map(t => ({
@@ -78,7 +82,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 9. CTA Section */}
+      {/* 9. Video Embeds Section */}
+      {videoEmbeds.length > 0 && (
+        <section className="section-container py-6 md:py-10">
+          <VideoEmbedsSection videos={videoEmbeds} />
+        </section>
+      )}
+
+      {/* 10. CTA Section */}
       {caseStudies.length > 0 && <CTASection variant="home" />}
     </main>
   );

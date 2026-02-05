@@ -29,6 +29,7 @@ export interface CaseStudy {
   hero_image_url: string | null;
   gallery_urls: string[] | null;
   metrics: Record<string, string> | null;
+  video_embeds: CaseStudyVideoEmbed[] | null;
   meta_title: string | null;
   meta_description: string | null;
   meta_keywords: string[] | null;
@@ -81,6 +82,28 @@ export interface ClientLogo {
   updated_at: string;
 }
 
+export interface VideoEmbed {
+  id: string;
+  title: string;
+  video_url: string;
+  platform: 'instagram' | 'tiktok' | 'youtube';
+  client_name: string | null;
+  description: string | null;
+  thumbnail_url: string | null;
+  is_active: boolean;
+  is_featured: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Video embed item for case studies (simplified)
+export interface CaseStudyVideoEmbed {
+  url: string;
+  platform: 'instagram' | 'tiktok' | 'youtube';
+  title?: string;
+}
+
 // Form Types
 export interface CaseStudyFormData {
   title: string;
@@ -97,6 +120,7 @@ export interface CaseStudyFormData {
   client_logo_url?: string;
   hero_image_url?: string;
   gallery_urls?: string[];
+  video_embeds?: CaseStudyVideoEmbed[];
   metrics?: Array<{ label: string; value: string }>;
   meta_title?: string;
   meta_description?: string;
@@ -136,6 +160,18 @@ export interface ClientLogoFormData {
   logo_url: string;
   website_url?: string;
   is_active: boolean;
+  display_order: number;
+}
+
+export interface VideoEmbedFormData {
+  title: string;
+  video_url: string;
+  platform: 'instagram' | 'tiktok' | 'youtube';
+  client_name?: string;
+  description?: string;
+  thumbnail_url?: string;
+  is_active: boolean;
+  is_featured: boolean;
   display_order: number;
 }
 

@@ -31,6 +31,11 @@ const navItems = [
     icon: 'bi-badge-ad',
   },
   {
+    href: '/admin/video-embeds',
+    label: 'Video Embeds',
+    icon: 'bi-play-circle',
+  },
+  {
     href: '/admin/settings',
     label: 'Settings',
     icon: 'bi-gear',
