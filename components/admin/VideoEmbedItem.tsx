@@ -125,17 +125,20 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm"
               />
             </div>
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
               <select
                 value={video.platform}
                 onChange={(e) => onUpdate(index, 'platform', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm bg-white"
+                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm bg-white appearance-none cursor-pointer"
               >
                 <option value="instagram">Instagram</option>
                 <option value="tiktok">TikTok</option>
                 <option value="youtube">YouTube</option>
               </select>
+              <div className="absolute inset-y-0 right-0 top-6 flex items-center pr-2 pointer-events-none">
+                <i className="bi bi-chevron-down text-gray-400 text-sm"></i>
+              </div>
             </div>
           </div>
           <div>

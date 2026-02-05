@@ -81,8 +81,8 @@ export function CaseStudyForm({
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Validate required image fields
-    const thumbnailUrl = formData.get('thumbnail_url');
+    // Validate required image fields (ImageUpload uses name prop directly)
+    const thumbnailUrl = formData.get('thumbnail');
     if (!thumbnailUrl || typeof thumbnailUrl !== 'string' || !thumbnailUrl.trim()) {
       alert('Thumbnail wajib diupload');
       return;
