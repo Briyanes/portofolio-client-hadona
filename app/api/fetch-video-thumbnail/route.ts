@@ -144,7 +144,7 @@ async function fetchInstagramThumbnail(url: string): Promise<string | null> {
         const match = html.match(pattern);
         if (match && match[1]) {
           // Decode unicode escapes if present
-          let imageUrl = match[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
+          const imageUrl = match[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
           if (imageUrl.startsWith('https://')) {
             return imageUrl;
           }
