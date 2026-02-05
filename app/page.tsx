@@ -75,17 +75,17 @@ export default async function HomePage() {
       {/* 5-7. Category Filter, Search Bar & Case Studies Grid (Client-Side Filtering) */}
       <CaseStudiesSection caseStudies={caseStudies} categories={categories} />
 
-      {/* 8. Testimonials Section */}
-      {testimonials.length > 0 && (
-        <section className="section-container py-6 md:py-10">
-          <TestimonialsSection testimonials={testimonials} layout="grid" limit={10} />
-        </section>
-      )}
-
-      {/* 9. Video Embeds Section */}
+      {/* 8. Video Embeds Section */}
       {videoEmbeds.length > 0 && (
         <section className="section-container py-6 md:py-10">
           <VideoEmbedsSection videos={videoEmbeds} />
+        </section>
+      )}
+
+      {/* 9. Testimonials Section */}
+      {testimonials.length > 0 && (
+        <section className="section-container py-6 md:py-10">
+          <TestimonialsSection testimonials={testimonials} layout="grid" limit={10} />
         </section>
       )}
 
