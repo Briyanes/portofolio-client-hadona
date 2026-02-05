@@ -93,10 +93,15 @@ export function VideoEmbedForm({
     }
   }, [isFetchingThumbnail]);
 
-  // Auto-fetch thumbnail when URL changes (with debounce)
+  // Auto-fetch thumbnail when URL changes (with debounce) - only for new videos
   useEffect(() => {
-    // Don't auto-fetch if already have thumbnail or no URL
-    if (thumbnailUrl || !videoUrl) return;
+    // Don't auto-fetch if:
+    // - Already have thumbnail
+    // - No URL entered
+    // - Already fetching
+    // - This is an edit (has initialData with thumbnail)
+    if (thumbnailUrl || !videoUrl || isFetchingThumbnail) return;
+    if (initialData?.thumbnail_url) return; // Don't auto-fetch for existing videos
     
     // Check if URL looks valid
     const isValidUrl = videoUrl.includes('instagram.com') || 
@@ -108,10 +113,10 @@ export function VideoEmbedForm({
 
     const timer = setTimeout(() => {
       fetchThumbnail(videoUrl, platform);
-    }, 1000); // Wait 1 second after user stops typing
+    }, 1500); // Wait 1.5 seconds after user stops typing
 
     return () => clearTimeout(timer);
-  }, [videoUrl, platform, thumbnailUrl, fetchThumbnail]);
+  }, [videoUrl, platform, thumbnailUrl, fetchThumbnail, isFetchingThumbnail, initialData?.thumbnail_url]);
 
   // Manual fetch thumbnail button handler
   const handleFetchThumbnail = async () => {
