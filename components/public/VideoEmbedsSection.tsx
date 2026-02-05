@@ -154,37 +154,37 @@ export function VideoEmbedsSection({
               >
                 {/* Video Thumbnail/Preview */}
                 <div 
-                  className="relative aspect-[9/16] bg-gray-900 cursor-pointer"
+                  className="relative aspect-[9/16] bg-gray-900 cursor-pointer overflow-hidden"
                   onClick={() => setActiveVideo(video)}
                 >
                   {/* Platform Badge */}
-                  <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-white text-xs font-bold bg-gradient-to-r ${getPlatformGradient(video.platform)} flex items-center gap-1.5`}>
+                  <div className={`absolute top-3 left-3 z-20 px-3 py-1 rounded-full text-white text-xs font-bold bg-gradient-to-r ${getPlatformGradient(video.platform)} flex items-center gap-1.5`}>
                     <i className={`bi ${getPlatformIcon(video.platform)}`}></i>
                     {video.platform.charAt(0).toUpperCase() + video.platform.slice(1)}
                   </div>
 
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                    <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                      <i className="bi bi-play-fill text-3xl text-hadona-primary ml-1"></i>
-                    </div>
-                  </div>
-
-                  {/* Thumbnail or Placeholder */}
+                  {/* Thumbnail or Placeholder - FIRST (background) */}
                   {video.thumbnail_url ? (
                     <img
                       src={video.thumbnail_url}
                       alt={video.title}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className={`w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} flex items-center justify-center`}>
+                    <div className={`absolute inset-0 w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} flex items-center justify-center`}>
                       <div className="text-center">
                         <i className={`bi ${getPlatformIcon(video.platform)} text-6xl text-white/50 mb-2`}></i>
                         <p className="text-white/50 text-xs font-medium px-4">{video.title}</p>
                       </div>
                     </div>
                   )}
+
+                  {/* Play Button Overlay - SECOND (on top) */}
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                    <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                      <i className="bi bi-play-fill text-3xl text-hadona-primary ml-1"></i>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Video Info */}
