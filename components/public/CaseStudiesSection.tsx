@@ -15,6 +15,7 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
   // Reference to the case studies section for scrolling
   const caseStudiesSectionRef = useRef<HTMLDivElement>(null);
@@ -76,9 +77,15 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
 
   // Reset to page 1 and scroll when filter changes
   useEffect(() => {
+    // Skip scroll on initial mount to show hero section first
+    if (isInitialMount) {
+      setIsInitialMount(false);
+      return;
+    }
+
     setCurrentPage(1);
     scrollToCaseStudies();
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, isInitialMount]);
 
   // Scroll to case studies section when page changes
   useEffect(() => {
