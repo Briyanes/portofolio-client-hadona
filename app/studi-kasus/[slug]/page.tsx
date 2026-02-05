@@ -5,6 +5,7 @@ import { CaseStudyHero } from '@/components/public/CaseStudyHero';
 import { ContentSection } from '@/components/public/ContentSection';
 import { TestimonialCard } from '@/components/public/TestimonialCard';
 import { ImageGallery } from '@/components/public/ImageGallery';
+import { CaseStudyVideos } from '@/components/public/CaseStudyVideos';
 import { RelatedCaseStudies } from '@/components/public/RelatedCaseStudies';
 import { CTASection } from '@/components/public/CTASection';
 import { getCaseStudyBySlug, getRelatedCaseStudies } from '@/lib/supabase-queries';
@@ -129,6 +130,11 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             {/* Testimonial */}
             {caseStudy.testimonial && (
               <TestimonialCard testimonial={caseStudy} />
+            )}
+
+            {/* Video Embeds */}
+            {caseStudy.video_embeds && caseStudy.video_embeds.length > 0 && (
+              <CaseStudyVideos videos={caseStudy.video_embeds} />
             )}
 
             {/* Gallery */}

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { ImageUpload } from './ImageUpload';
 import { MultipleImageUpload } from './MultipleImageUpload';
+import { VideoEmbedItem } from './VideoEmbedItem';
 import { Category, CaseStudyFormData, CaseStudyVideoEmbed } from '@/lib/types';
 
 interface CaseStudyFormProps {
@@ -267,52 +268,13 @@ export function CaseStudyForm({
         </p>
         <div className="space-y-4">
           {videoEmbeds.map((video, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-                <div className="md:col-span-5">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Video</label>
-                  <input
-                    type="text"
-                    value={video.url}
-                    onChange={(e) => updateVideoEmbed(index, 'url', e.target.value)}
-                    placeholder="https://www.instagram.com/reel/..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
-                  <select
-                    value={video.platform}
-                    onChange={(e) => updateVideoEmbed(index, 'platform', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm bg-white"
-                  >
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="youtube">YouTube</option>
-                  </select>
-                </div>
-                <div className="md:col-span-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Judul (Opsional)</label>
-                  <input
-                    type="text"
-                    value={video.title || ''}
-                    onChange={(e) => updateVideoEmbed(index, 'title', e.target.value)}
-                    placeholder="Deskripsi singkat video"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hadona-primary/20 focus:border-hadona-primary text-sm"
-                  />
-                </div>
-                <div className="md:col-span-1 flex items-end">
-                  <button
-                    type="button"
-                    onClick={() => removeVideoEmbed(index)}
-                    className="w-full px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
-                    title="Hapus video"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <VideoEmbedItem
+              key={index}
+              video={video}
+              index={index}
+              onUpdate={updateVideoEmbed}
+              onRemove={removeVideoEmbed}
+            />
           ))}
           {videoEmbeds.length === 0 && (
             <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">

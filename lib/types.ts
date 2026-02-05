@@ -102,6 +102,7 @@ export interface CaseStudyVideoEmbed {
   url: string;
   platform: 'instagram' | 'tiktok' | 'youtube';
   title?: string;
+  thumbnail_url?: string;
 }
 
 // Form Types
