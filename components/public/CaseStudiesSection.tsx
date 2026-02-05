@@ -87,8 +87,15 @@ export function CaseStudiesSection({ caseStudies, categories }: CaseStudiesSecti
     scrollToCaseStudies();
   }, [selectedCategory, searchQuery, isInitialMount]);
 
-  // Scroll to case studies section when page changes
+  // Track if it's the first page change (initial render)
+  const isFirstPageRender = useRef(true);
+
+  // Scroll to case studies section when page changes (but not on initial render)
   useEffect(() => {
+    if (isFirstPageRender.current) {
+      isFirstPageRender.current = false;
+      return;
+    }
     scrollToCaseStudies();
   }, [currentPage]);
 
