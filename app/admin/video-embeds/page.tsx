@@ -39,7 +39,7 @@ export default async function VideoEmbedsPage() {
   try {
     videoEmbeds = await adminGetAllVideoEmbeds();
   } catch (error) {
-    console.error('Error loading video embeds:', error);
+    // silently handle
   }
 
   return (
@@ -61,7 +61,8 @@ export default async function VideoEmbedsPage() {
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           {videoEmbeds.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-200">
+            <div className="overflow-x-auto">
+            <table className="min-w-full min-w-[600px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -145,6 +146,7 @@ export default async function VideoEmbedsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">

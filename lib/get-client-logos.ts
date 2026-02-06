@@ -28,8 +28,7 @@ export function getClientLogosFromFolder(): ClientLogo[] {
       .sort((a, b) => a.client_name.localeCompare(b.client_name));
 
     return logos;
-  } catch (error) {
-    console.error('Error reading client logos:', error);
+  } catch (_) {
     return [];
   }
 }

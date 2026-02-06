@@ -21,7 +21,6 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error fetching video embeds:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch video embeds' },
       { status: 500 }
@@ -88,7 +87,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating video embed:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to create video embed' },
       { status: 500 }

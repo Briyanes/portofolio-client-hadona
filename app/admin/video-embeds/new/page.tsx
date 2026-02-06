@@ -57,7 +57,6 @@ export default async function NewVideoEmbedPage() {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error creating video embed:', error);
       return { error: error.message || 'Gagal menyimpan video' };
     }
   }

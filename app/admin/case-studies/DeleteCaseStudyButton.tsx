@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface DeleteCaseStudyButtonProps {
   caseStudyId: string;
@@ -19,25 +20,21 @@ export function DeleteCaseStudyButton({ caseStudyId, caseStudyTitle }: DeleteCas
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/case-studies/${caseStudyId}/delete`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch(`/api/case-studies/${caseStudyId}`, {
+          method: 'DELETE',
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-          alert(`Error: ${result.error || 'Failed to delete'}`);
+          toast.error(result.error || 'Failed to delete');
           return;
         }
 
-        // Success - refresh the page
+        toast.success('Studi kasus berhasil dihapus');
         router.refresh();
       } catch (error: any) {
-        console.error('Delete error:', error);
-        alert(`Error: ${error?.message || 'Failed to delete'}`);
+        toast.error(error?.message || 'Failed to delete');
       }
     });
   };

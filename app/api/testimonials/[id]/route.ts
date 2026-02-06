@@ -32,7 +32,6 @@ export async function GET(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error fetching testimonial:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch testimonial' },
       { status: 500 }
@@ -76,7 +75,6 @@ export async function PUT(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error updating testimonial:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to update testimonial' },
       { status: 500 }
@@ -106,7 +104,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, message: 'Testimonial deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting testimonial:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to delete testimonial' },
       { status: 500 }

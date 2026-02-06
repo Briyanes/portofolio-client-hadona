@@ -25,7 +25,6 @@ export default async function EditVideoEmbedPage({ params }: EditVideoEmbedPageP
   try {
     videoEmbed = await adminGetVideoEmbedById(id);
   } catch (error) {
-    console.error('Error loading video embed:', error);
     notFound();
   }
 
@@ -79,7 +78,6 @@ export default async function EditVideoEmbedPage({ params }: EditVideoEmbedPageP
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error updating video embed:', error);
       return { error: error.message || 'Gagal memperbarui video' };
     }
   }

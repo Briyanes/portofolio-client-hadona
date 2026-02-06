@@ -19,7 +19,7 @@ export default async function ClientLogosPage() {
   try {
     clientLogos = await adminGetAllClientLogos();
   } catch (error) {
-    console.error('Error loading client logos:', error);
+    // silently handle
   }
 
   return (
@@ -41,7 +41,8 @@ export default async function ClientLogosPage() {
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           {clientLogos.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-200">
+            <div className="overflow-x-auto">
+            <table className="min-w-full min-w-[600px] divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -125,6 +126,7 @@ export default async function ClientLogosPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500 mb-4">Belum ada logo klien</p>

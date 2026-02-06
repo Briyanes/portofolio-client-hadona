@@ -26,7 +26,6 @@ export async function GET(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error fetching video embed:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch video embed' },
       { status: 500 }
@@ -98,7 +97,6 @@ export async function PUT(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error updating video embed:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to update video embed' },
       { status: 500 }
@@ -129,7 +127,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, message: 'Video embed deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting video embed:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to delete video embed' },
       { status: 500 }

@@ -59,7 +59,6 @@ export default async function EditClientLogoPage({
           .eq('id', id);
 
         if (error) {
-          console.error('Supabase update error:', error);
           return { error: error.message || 'Failed to update client logo' };
         }
 
@@ -69,7 +68,6 @@ export default async function EditClientLogoPage({
 
         return { success: true };
       } catch (error: any) {
-        console.error('Update client logo error:', error);
         return { error: error.message || 'Something went wrong' };
       }
     }
@@ -103,7 +101,6 @@ export default async function EditClientLogoPage({
       </AdminProtectedLayout>
     );
   } catch (error: any) {
-    console.error('Edit client logo page error:', error);
     redirect('/admin/client-logos');
   }
 }

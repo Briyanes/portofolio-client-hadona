@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
       });
 
     if (uploadError) {
-      console.error('Upload error:', uploadError);
       throw uploadError;
     }
 
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
       path: filePath,
     });
   } catch (error: any) {
-    console.error('Error uploading file:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to upload file' },
       { status: 500 }

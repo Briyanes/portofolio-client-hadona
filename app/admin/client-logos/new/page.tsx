@@ -45,7 +45,6 @@ export default async function NewClientLogoPage() {
         });
 
       if (error) {
-        console.error('Supabase insert error:', error);
         return { error: error.message || 'Failed to create client logo' };
       }
 
@@ -55,7 +54,6 @@ export default async function NewClientLogoPage() {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Create client logo error:', error);
       return { error: error.message || 'Something went wrong' };
     }
   }

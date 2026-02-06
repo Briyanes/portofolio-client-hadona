@@ -61,7 +61,6 @@ export default async function EditTestimonialPage({
           .eq('id', id);
 
         if (error) {
-          console.error('Supabase update error:', error);
           return { error: error.message || 'Failed to update testimonial' };
         }
 
@@ -71,7 +70,6 @@ export default async function EditTestimonialPage({
 
         return { success: true };
       } catch (error: any) {
-        console.error('Update testimonial error:', error);
         return { error: error.message || 'Something went wrong' };
       }
     }
@@ -106,7 +104,6 @@ export default async function EditTestimonialPage({
       </AdminProtectedLayout>
     );
   } catch (error: any) {
-    console.error('Edit testimonial page error:', error);
     redirect('/admin/testimonials');
   }
 }

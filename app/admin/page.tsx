@@ -1,4 +1,4 @@
-import { getPublishedCaseStudies, getCaseStudiesCount } from '@/lib/supabase-queries';
+import { getPublishedCaseStudies, adminGetDashboardCounts } from '@/lib/supabase-queries';
 import { StatCard } from '@/components/admin/dashboard/StatCard';
 import { AdminCaseStudyCard } from '@/components/admin/case-studies/AdminCaseStudyCard';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
@@ -7,51 +7,69 @@ import { CaseStudy } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-  // Fetch statistics with error handling
   let caseStudies: CaseStudy[] = [];
-  let countData = { total: 0, published: 0, draft: 0, featured: 0 };
+  let counts = {
+    caseStudies: { total: 0, published: 0, draft: 0, featured: 0 },
+    categories: 0,
+    testimonials: { total: 0, published: 0 },
+    clientLogos: { total: 0, active: 0 },
+    videoEmbeds: { total: 0, active: 0 },
+  };
   let hasError = false;
 
   try {
-    const [studies, counts] = await Promise.all([
+    const [studies, dashboardCounts] = await Promise.all([
       getPublishedCaseStudies(),
-      getCaseStudiesCount(),
+      adminGetDashboardCounts(),
     ]);
     caseStudies = studies || [];
-    countData = counts || { total: 0, published: 0, draft: 0, featured: 0 };
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error);
+    counts = dashboardCounts;
+  } catch {
     hasError = true;
   }
 
   const stats = [
     {
-      title: 'Total Case Studies',
-      value: countData.total || 0,
+      title: 'Case Studies',
+      value: counts.caseStudies.total,
       icon: 'bi-file-earmark-text',
       color: 'from-blue-500 to-blue-600',
       href: '/admin/case-studies',
     },
     {
       title: 'Published',
-      value: countData.published || 0,
+      value: counts.caseStudies.published,
       icon: 'bi-check-circle',
       color: 'from-green-500 to-green-600',
-      href: '/admin/case-studies?status=published',
+      href: '/admin/case-studies',
     },
     {
-      title: 'Draft',
-      value: countData.draft || 0,
-      icon: 'bi-file-earmark',
-      color: 'from-yellow-500 to-yellow-600',
-      href: '/admin/case-studies?status=draft',
+      title: 'Categories',
+      value: counts.categories,
+      icon: 'bi-tags',
+      color: 'from-indigo-500 to-indigo-600',
+      href: '/admin/categories',
     },
     {
-      title: 'Featured',
-      value: countData.featured || 0,
-      icon: 'bi-star',
+      title: 'Testimonials',
+      value: counts.testimonials.total,
+      icon: 'bi-chat-quote',
       color: 'from-purple-500 to-purple-600',
-      href: '/admin/case-studies?featured=true',
+      href: '/admin/testimonials',
+    },
+    {
+      title: 'Client Logos',
+      value: counts.clientLogos.active,
+      icon: 'bi-badge-ad',
+      color: 'from-amber-500 to-amber-600',
+      href: '/admin/client-logos',
+    },
+    {
+      title: 'Video Embeds',
+      value: counts.videoEmbeds.active,
+      icon: 'bi-play-circle',
+      color: 'from-red-500 to-red-600',
+      href: '/admin/video-embeds',
     },
   ];
 
@@ -80,7 +98,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 md:gap-6 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6 w-full">
         {stats.map((stat) => (
           <StatCard key={stat.title} stat={stat} />
         ))}

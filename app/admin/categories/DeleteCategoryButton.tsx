@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface DeleteCategoryButtonProps {
   categoryId: string;
@@ -19,25 +20,21 @@ export function DeleteCategoryButton({ categoryId, categoryName }: DeleteCategor
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/categories/${categoryId}/delete`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch(`/api/categories/${categoryId}`, {
+          method: 'DELETE',
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-          alert(`Error: ${result.error || 'Failed to delete'}`);
+          toast.error(result.error || 'Failed to delete');
           return;
         }
 
-        // Success - refresh the page
+        toast.success('Kategori berhasil dihapus');
         router.refresh();
       } catch (error: any) {
-        console.error('Delete error:', error);
-        alert(`Error: ${error?.message || 'Failed to delete'}`);
+        toast.error(error?.message || 'Failed to delete');
       }
     });
   };

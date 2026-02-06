@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: categories });
   } catch (error: any) {
-    console.error('Error fetching categories:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch categories' },
       { status: 500 }
@@ -70,8 +69,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ data: newCategory }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating category:', error);
-
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },

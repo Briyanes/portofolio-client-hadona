@@ -6,7 +6,6 @@ import { CaseStudyForm } from '@/components/admin/CaseStudyForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { caseStudySchema } from '@/lib/validators';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,98 +29,10 @@ export default async function NewCaseStudyPage() {
     }
 
     try {
+      const { parseCaseStudyFormData } = await import('@/lib/parse-case-study-form');
 
-      // Helper untuk mengambil string dari FormData
-      const getString = (key: string): string => {
-        const val = formData.get(key);
-        if (val instanceof File) return '';
-        return val === null || val === undefined ? '' : String(val);
-      };
-
-      // Helper untuk boolean dari FormData
-      const getBoolean = (key: string): boolean => {
-        const val = formData.get(key);
-        return val === 'on' || val === 'true';
-      };
-
-      // Parse metrics JSON
-      let parsedMetrics;
-      const metrics_json = getString('metrics');
-      if (metrics_json && metrics_json.trim() !== '') {
-        try {
-          parsedMetrics = JSON.parse(metrics_json);
-        } catch (e) {
-          parsedMetrics = undefined;
-        }
-      }
-
-      // Parse meta keywords
-      let parsedKeywords;
-      const meta_keywords_str = getString('meta_keywords');
-      if (meta_keywords_str && meta_keywords_str.trim() !== '') {
-        parsedKeywords = meta_keywords_str.split(',').map((k: string) => k.trim()).filter(Boolean);
-      }
-
-      // Parse gallery_urls
-      let gallery_urls;
-      const gallery_urls_str = formData.get('gallery_urls');
-      if (gallery_urls_str && typeof gallery_urls_str === 'string' && gallery_urls_str.trim() !== '') {
-        try {
-          gallery_urls = JSON.parse(gallery_urls_str);
-          if (!Array.isArray(gallery_urls)) {
-            gallery_urls = undefined;
-          }
-        } catch (e) {
-          gallery_urls = undefined;
-        }
-      }
-
-      // Parse video_embeds
-      let video_embeds;
-      const video_embeds_str = getString('video_embeds');
-      if (video_embeds_str && video_embeds_str.trim() !== '') {
-        try {
-          video_embeds = JSON.parse(video_embeds_str);
-          if (!Array.isArray(video_embeds)) {
-            video_embeds = [];
-          }
-        } catch (e) {
-          video_embeds = [];
-        }
-      }
-
-      // Prepare data for validation
-      const rawData = {
-        title: getString('title').trim(),
-        slug: getString('slug').trim(),
-        client_name: getString('client_name').trim(),
-        category_id: getString('category_id').trim(),
-        challenge: getString('challenge').trim(),
-        strategy: getString('strategy').trim(),
-        results: getString('results').trim(),
-        testimonial: getString('testimonial').trim(),
-        testimonial_author: getString('testimonial_author').trim(),
-        testimonial_position: getString('testimonial_position').trim(),
-        metrics: parsedMetrics,
-        meta_title: getString('meta_title').trim(),
-        meta_description: getString('meta_description').trim(),
-        meta_keywords: parsedKeywords,
-        thumbnail_url: getString('thumbnail_url').trim(),
-        hero_image_url: getString('hero_image_url').trim(),
-        client_logo_url: getString('client_logo_url').trim(),
-        gallery_urls: gallery_urls,
-        video_embeds: video_embeds || [],
-        display_order: parseInt(getString('display_order')) || 0,
-        is_featured: getBoolean('is_featured'),
-        is_published: getBoolean('is_published'),
-        website_url: getString('website_url').trim(),
-        instagram_url: getString('instagram_url').trim(),
-        facebook_url: getString('facebook_url').trim(),
-        services: getString('services').trim(),
-      };
-
-      // Validate with Zod
-      const validatedData = caseStudySchema.parse(rawData);
+      // Parse and validate FormData
+      const validatedData = parseCaseStudyFormData(formData);
 
       // Check if slug is unique
       if (validatedData.slug) {
@@ -161,7 +72,6 @@ export default async function NewCaseStudyPage() {
       // Return success - client will handle redirect
       return { success: true };
     } catch (error: any) {
-      console.error('Create error:', error);
       if (error.name === 'ZodError') {
         return { error: 'Validation error', details: error.errors };
       }

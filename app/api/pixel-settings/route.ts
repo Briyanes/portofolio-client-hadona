@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
       settings,
     });
   } catch (error) {
-    console.error('Error updating pixel settings:', error);
     return NextResponse.json(
       { error: 'Failed to update pixel settings' },
       { status: 500 }
@@ -96,7 +95,6 @@ export async function GET() {
       settings,
     });
   } catch (error) {
-    console.error('Error fetching pixel settings:', error);
     return NextResponse.json(
       { error: 'Failed to fetch pixel settings' },
       { status: 500 }

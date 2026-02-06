@@ -12,7 +12,7 @@ export default async function AdminCaseStudiesPage() {
   try {
     caseStudies = await adminGetAllCaseStudies();
   } catch (error) {
-    console.error('Error loading case studies:', error);
+    // silently handle
   }
 
   return (
@@ -32,7 +32,8 @@ export default async function AdminCaseStudiesPage() {
         {/* Case Studies Table */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           {caseStudies.length > 0 ? (
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
@@ -128,6 +129,7 @@ export default async function AdminCaseStudiesPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500 mb-4">Belum ada studi kasus</p>

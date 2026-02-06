@@ -43,7 +43,6 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting case study:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to delete case study' },
       { status: 500 }

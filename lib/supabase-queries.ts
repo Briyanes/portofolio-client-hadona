@@ -86,7 +86,6 @@ export async function adminGetAllCaseStudies() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching case studies:', error);
     throw error;
   }
   return data as CaseStudy[];
@@ -101,7 +100,6 @@ export async function adminGetCaseStudyById(id: string) {
     .single();
 
   if (error) {
-    console.error('Error fetching case study by ID:', error);
     throw error;
   }
   return data as CaseStudy;
@@ -116,7 +114,6 @@ export async function adminGetAllCategories() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching categories:', error);
     throw error;
   }
   return data as Category[];
@@ -162,6 +159,57 @@ export async function adminGetStatistics() {
     publishedCaseStudies: caseStudies.filter((cs: any) => cs.is_published).length,
     draftCaseStudies: caseStudies.filter((cs: any) => !cs.is_published).length,
     totalCategories,
+  };
+}
+
+// ADMIN: Get full dashboard counts (all content types)
+export async function adminGetDashboardCounts() {
+  const [
+    caseStudyTotal,
+    caseStudyPublished,
+    caseStudyDraft,
+    caseStudyFeatured,
+    categoriesTotal,
+    testimonialsTotal,
+    testimonialsPublished,
+    clientLogosTotal,
+    clientLogosActive,
+    videoEmbedsTotal,
+    videoEmbedsActive,
+  ] = await Promise.all([
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', true),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_published', false),
+    supabaseAdmin.from('case_studies').select('id', { count: 'exact', head: true }).eq('is_featured', true),
+    supabaseAdmin.from('categories').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('testimonials').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('testimonials').select('id', { count: 'exact', head: true }).eq('is_published', true),
+    supabaseAdmin.from('client_logos').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('client_logos').select('id', { count: 'exact', head: true }).eq('is_active', true),
+    supabaseAdmin.from('video_embeds').select('id', { count: 'exact', head: true }),
+    supabaseAdmin.from('video_embeds').select('id', { count: 'exact', head: true }).eq('is_active', true),
+  ]);
+
+  return {
+    caseStudies: {
+      total: caseStudyTotal.count || 0,
+      published: caseStudyPublished.count || 0,
+      draft: caseStudyDraft.count || 0,
+      featured: caseStudyFeatured.count || 0,
+    },
+    categories: categoriesTotal.count || 0,
+    testimonials: {
+      total: testimonialsTotal.count || 0,
+      published: testimonialsPublished.count || 0,
+    },
+    clientLogos: {
+      total: clientLogosTotal.count || 0,
+      active: clientLogosActive.count || 0,
+    },
+    videoEmbeds: {
+      total: videoEmbedsTotal.count || 0,
+      active: videoEmbedsActive.count || 0,
+    },
   };
 }
 
@@ -373,7 +421,6 @@ export async function getPixelSettings() {
         is_gtm_enabled: false,
       };
     }
-    console.error('Error fetching pixel settings:', error);
     throw error;
   }
 
@@ -424,7 +471,6 @@ export async function updatePixelSettings(settings: {
   }
 
   if (result.error) {
-    console.error('Error updating pixel settings:', result.error);
     throw result.error;
   }
 
@@ -457,12 +503,10 @@ export async function getFeaturedVideoEmbeds(limit: number = 10): Promise<VideoE
       .limit(limit);
 
     if (error) {
-      console.error('Error fetching featured video embeds:', error);
       return [];
     }
     return data as VideoEmbed[];
-  } catch (error) {
-    console.error('Failed to fetch video embeds:', error);
+  } catch (_) {
     return [];
   }
 }

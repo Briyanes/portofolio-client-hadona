@@ -32,7 +32,6 @@ export async function GET(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error fetching client logo:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch client logo' },
       { status: 500 }
@@ -74,7 +73,6 @@ export async function PUT(
 
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
-    console.error('Error updating client logo:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to update client logo' },
       { status: 500 }
@@ -104,7 +102,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, message: 'Client logo deleted successfully' });
   } catch (error: any) {
-    console.error('Error deleting client logo:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to delete client logo' },
       { status: 500 }

@@ -11,7 +11,7 @@ export default async function AdminCategoriesPage() {
   try {
     categories = await adminGetAllCategories();
   } catch (error) {
-    console.error('Error loading categories:', error);
+    // silently handle
   }
 
   return (

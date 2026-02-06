@@ -47,7 +47,6 @@ export default async function NewTestimonialPage() {
         });
 
       if (error) {
-        console.error('Supabase insert error:', error);
         return { error: error.message || 'Failed to create testimonial' };
       }
 
@@ -57,7 +56,6 @@ export default async function NewTestimonialPage() {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Create testimonial error:', error);
       return { error: error.message || 'Something went wrong' };
     }
   }

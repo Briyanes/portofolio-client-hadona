@@ -30,7 +30,6 @@ export async function GET(
 
     return NextResponse.json({ data: category });
   } catch (error: any) {
-    console.error('Error fetching category:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch category' },
       { status: 500 }
@@ -85,8 +84,6 @@ export async function PUT(
 
     return NextResponse.json({ data: updatedCategory });
   } catch (error: any) {
-    console.error('Error updating category:', error);
-
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -128,9 +125,12 @@ export async function DELETE(
 
     if (error) throw error;
 
+    // Revalidate paths
+    const { revalidatePath } = await import('next/cache');
+    revalidatePath('/admin/categories');
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting category:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to delete category' },
       { status: 500 }
