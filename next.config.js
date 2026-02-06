@@ -105,7 +105,7 @@ const nextConfig = {
               "img-src 'self' data: https: blob: https://*.supabase.co https://portofolio.hadona.id https://hadona.id https://*.hadona.id https://*.vercel.app https://cdn.jsdelivr.net https://*.fbcdn.net https://www.facebook.com",
               "font-src 'self' https://cdn.jsdelivr.net data:",
               "connect-src 'self' https://*.supabase.co https://supabase.co https://portofolio.hadona.id https://hadona.id https://*.hadona.id https://*.vercel.app wss://*.supabase.co wss://supabase.co https://www.facebook.com https://www.google-analytics.com",
-              "frame-src 'none'",
+              "frame-src https://www.youtube.com https://youtube.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

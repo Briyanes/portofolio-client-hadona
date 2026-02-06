@@ -1,37 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import type { CaseStudyVideoEmbed } from '@/lib/types';
 
 interface CaseStudyVideosProps {
   videos: CaseStudyVideoEmbed[];
 }
 
-// Helper function to convert video URL to embed URL
-function getEmbedUrl(url: string, platform: string): string {
+// Helper function to convert YouTube URL to embed URL
+function getYouTubeEmbedUrl(url: string): string {
   if (!url) return '';
-  
-  if (platform === 'instagram') {
-    if (url.includes('/embed/')) return url;
-    return url.replace(/\/?$/, '/embed/');
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (match) {
+    return `https://www.youtube.com/embed/${match[1]}`;
   }
-  
-  if (platform === 'tiktok') {
-    const match = url.match(/video\/(\d+)/);
-    if (match) {
-      return `https://www.tiktok.com/embed/v2/${match[1]}`;
-    }
-    return url;
-  }
-  
-  if (platform === 'youtube') {
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-    if (match) {
-      return `https://www.youtube.com/embed/${match[1]}`;
-    }
-    return url;
-  }
-  
   return url;
 }
 
@@ -90,10 +73,13 @@ export function CaseStudyVideos({ videos }: CaseStudyVideosProps) {
 
                 {/* Thumbnail or Placeholder */}
                 {video.thumbnail_url ? (
-                  <img
+                  <Image
                     src={video.thumbnail_url}
                     alt={video.title || 'Video thumbnail'}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    loading="lazy"
                   />
                 ) : (
                   <div className={`absolute inset-0 w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} flex items-center justify-center`}>
@@ -133,50 +119,51 @@ export function CaseStudyVideos({ videos }: CaseStudyVideosProps) {
             {/* Close Button */}
             <button
               onClick={() => setActiveVideo(null)}
-              className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute top-4 right-4 z-20 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
             >
               <i className="bi bi-x-lg text-lg"></i>
             </button>
 
-            {/* Platform Badge in Modal */}
-            <div className={`absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full text-white text-sm font-bold bg-gradient-to-r ${getPlatformGradient(activeVideo.platform)} flex items-center gap-1.5`}>
-              <i className={`bi ${getPlatformIcon(activeVideo.platform)}`}></i>
-              {activeVideo.platform.charAt(0).toUpperCase() + activeVideo.platform.slice(1)}
-            </div>
-
-            {/* Video Embed */}
-            <div className="aspect-[9/16] bg-black">
-              {activeVideo.platform === 'youtube' ? (
+            {/* Video Content */}
+            {activeVideo.platform === 'youtube' ? (
+              // YouTube embed
+              <div className="aspect-video">
                 <iframe
-                  src={getEmbedUrl(activeVideo.url, activeVideo.platform) + '?autoplay=1'}
+                  src={getYouTubeEmbedUrl(activeVideo.url) + '?autoplay=1'}
                   className="w-full h-full"
                   frameBorder="0"
+                  allowFullScreen
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
                 />
-              ) : activeVideo.platform === 'tiktok' ? (
-                <iframe
-                  src={getEmbedUrl(activeVideo.url, activeVideo.platform)}
-                  className="w-full h-full"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <iframe
-                  src={getEmbedUrl(activeVideo.url, activeVideo.platform)}
-                  className="w-full h-full"
-                  frameBorder="0"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                />
-              )}
-            </div>
+              </div>
+            ) : (
+              // Instagram/TikTok - show external link (iframe blocked by CSP)
+              <div className="aspect-[9/16] flex flex-col items-center justify-center p-6 bg-gradient-to-br from-gray-900 to-gray-800">
+                {/* Platform Icon */}
+                <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${getPlatformGradient(activeVideo.platform)} flex items-center justify-center mb-6`}>
+                  <i className={`bi ${getPlatformIcon(activeVideo.platform)} text-4xl text-white`}></i>
+                </div>
 
-            {/* Video Title in Modal */}
-            {activeVideo.title && (
-              <div className="p-4 bg-gray-900">
-                <h3 className="text-white font-semibold">{activeVideo.title}</h3>
+                {/* Video Title */}
+                {activeVideo.title && (
+                  <h3 className="text-xl font-bold text-white text-center mb-6">{activeVideo.title}</h3>
+                )}
+
+                {/* Watch on Platform Button */}
+                <a
+                  href={activeVideo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r ${getPlatformGradient(activeVideo.platform)} text-white rounded-xl font-bold hover:scale-105 transition-transform shadow-lg`}
+                >
+                  <i className={`bi ${getPlatformIcon(activeVideo.platform)} text-xl`}></i>
+                  Tonton di {activeVideo.platform.charAt(0).toUpperCase() + activeVideo.platform.slice(1)}
+                  <i className="bi bi-box-arrow-up-right"></i>
+                </a>
+
+                <p className="text-gray-500 text-sm mt-4">
+                  Video akan terbuka di tab baru
+                </p>
               </div>
             )}
           </div>

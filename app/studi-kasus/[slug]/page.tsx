@@ -1,14 +1,23 @@
 import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Breadcrumb } from '@/components/public/Breadcrumb';
 import { QuickInfoBar } from '@/components/public/QuickInfoBar';
 import { CaseStudyHero } from '@/components/public/CaseStudyHero';
 import { ContentSection } from '@/components/public/ContentSection';
 import { TestimonialCard } from '@/components/public/TestimonialCard';
-import { ImageGallery } from '@/components/public/ImageGallery';
-import { CaseStudyVideos } from '@/components/public/CaseStudyVideos';
-import { RelatedCaseStudies } from '@/components/public/RelatedCaseStudies';
 import { CTASection } from '@/components/public/CTASection';
 import { getCaseStudyBySlug, getRelatedCaseStudies } from '@/lib/supabase-queries';
+
+// Lazy load heavy below-fold components
+const ImageGallery = dynamic(() => import('@/components/public/ImageGallery').then(mod => ({ default: mod.ImageGallery })), {
+  loading: () => <div className="h-64 bg-gray-100 rounded-2xl animate-pulse" />,
+});
+const CaseStudyVideos = dynamic(() => import('@/components/public/CaseStudyVideos').then(mod => ({ default: mod.CaseStudyVideos })), {
+  loading: () => <div className="h-64 bg-gray-100 rounded-2xl animate-pulse" />,
+});
+const RelatedCaseStudies = dynamic(() => import('@/components/public/RelatedCaseStudies').then(mod => ({ default: mod.RelatedCaseStudies })), {
+  loading: () => <div className="h-48 bg-gray-100 rounded-2xl animate-pulse" />,
+});
 
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60;
@@ -45,7 +54,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     notFound();
   }
 
-  const relatedCaseStudies = await getRelatedCaseStudies(
+  // Fetch related case studies (promise started early)
+  const relatedPromise = getRelatedCaseStudies(
     caseStudy.category_id || '',
     caseStudy.id,
     4
@@ -74,6 +84,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     datePublished: caseStudy.created_at,
     dateModified: caseStudy.updated_at,
   };
+
+  // Await related case studies (promise was started earlier for parallelism with jsonLd computation)
+  const relatedCaseStudies = await relatedPromise;
 
   return (
     <>
