@@ -1,5 +1,8 @@
 'use client';
 
+import { getWhatsAppURL } from '@/lib/constants';
+import { usePixelTracking } from '@/lib/hooks/usePixelTracking';
+
 interface Service {
   id: string;
   icon: string;
@@ -15,6 +18,8 @@ interface ServicesOverviewSectionProps {
 }
 
 export function ServicesOverviewSection({ services, columns = 3 }: ServicesOverviewSectionProps) {
+  const { trackInitiateCheckout } = usePixelTracking();
+
   const gridCols =
     columns === 2
       ? 'md:grid-cols-2'
@@ -71,13 +76,14 @@ export function ServicesOverviewSection({ services, columns = 3 }: ServicesOverv
       <div className="text-center">
         <p className="text-gray-600 mb-6">Butuh layanan yang tidak tercantum di atas?</p>
         <a
-          href="https://hadona.id/contact"
+          href={getWhatsAppURL()}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary"
+          onClick={() => trackInitiateCheckout()}
         >
-          <i className="bi bi-chat-dots text-xl"></i>
-          Diskusikan Kebutuhan Anda
+          <i className="bi bi-whatsapp text-xl"></i>
+          Hubungi Kami
         </a>
       </div>
     </section>
