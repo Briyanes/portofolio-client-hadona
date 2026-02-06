@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Font Inter is loaded via next/font/google in layout.tsx — no @import needed */
 
 * {
   box-sizing: border-box;
@@ -824,12 +824,13 @@ a {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-33.33%);
+    transform: translateX(-50%);
   }
 }
 
 .animate-scroll {
-  animation: scroll 40s linear infinite;
+  animation: scroll 30s linear infinite;
+  will-change: transform;
 }
 
 .pause-animation {
@@ -858,12 +859,13 @@ a {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-33.33%);
+    transform: translateX(-50%);
   }
 }
 
 .animate-scroll-testimonial {
-  animation: scroll-testimonial 60s linear infinite;
+  animation: scroll-testimonial 45s linear infinite;
+  will-change: transform;
 }
 
 /* Video Slider Animation - Moderate speed for video thumbnails */
@@ -872,12 +874,13 @@ a {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-33.33%);
+    transform: translateX(-50%);
   }
 }
 
 .animate-scroll-video {
-  animation: scroll-video 45s linear infinite;
+  animation: scroll-video 35s linear infinite;
+  will-change: transform;
 }
 
 /* Smooth scrolling for drag functionality */

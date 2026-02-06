@@ -24,16 +24,55 @@ const nextConfig = {
         hostname: 'via.placeholder.com',
       },
     ],
-    unoptimized: false
+    unoptimized: false,
+    // Optimize image formats
+    formats: ['image/avif', 'image/webp'],
+    // Limit image sizes to reduce memory usage
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // Cache optimized images longer
+    minimumCacheTTL: 31536000,
   },
+  // Enable compression
+  compress: true,
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb'
-    }
+    },
+    // Optimize package imports
+    optimizePackageImports: ['react-hot-toast', 'react-dropzone'],
   },
   output: 'standalone',
   async headers() {
     return [
+      {
+        // Cache static assets (fonts, images, CSS) for 1 year
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/css/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
+      {
+        source: '/logo/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      },
       {
         source: '/:path*',
         headers: [

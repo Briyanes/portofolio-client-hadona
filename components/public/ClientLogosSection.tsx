@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import type { ClientLogo } from '@/lib/types';
 
 interface ClientLogosSectionProps {
@@ -16,12 +17,8 @@ export function ClientLogosSection({
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // Debug: Log clients data
-  console.log('ClientLogosSection received clients:', clients);
-
-  // Use all clients and duplicate for seamless infinite loop
-  // Duplicate array 3 times for seamless infinite scrolling
-  const duplicatedClients = [...clients, ...clients, ...clients];
+  // Duplicate array 2 times (instead of 3) for seamless infinite scrolling — less DOM
+  const duplicatedClients = [...clients, ...clients];
 
   // Drag functionality
   const handleMouseDown = () => {
@@ -113,23 +110,26 @@ export function ClientLogosSection({
                 className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
               >
                 {isValidLogo ? (
-                  <img
-                    src={logoSrc}
-                    alt={client.name}
-                    className="h-16 md:h-20 lg:h-24 w-auto object-contain"
-                    onError={(e) => {
-                      console.error('Image load error:', client.name, logoSrc);
-                      // Hide image and show fallback on error
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent && !parent.querySelector('.fallback-text')) {
-                        const fallback = document.createElement('div');
-                        fallback.className = 'fallback-text h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
-                        fallback.textContent = client.name;
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
+                  <div className="relative h-16 md:h-20 lg:h-24 w-32 md:w-36">
+                    <Image
+                      src={logoSrc}
+                      alt={client.name}
+                      fill
+                      className="object-contain"
+                      sizes="144px"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        const parent = (e.target as HTMLImageElement).parentElement;
+                        if (parent && !parent.querySelector('.fallback-text')) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'fallback-text h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
+                          fallback.textContent = client.name;
+                          parent.appendChild(fallback);
+                        }
+                      }}
+                    />
+                  </div>
                 ) : (
                   <div className="h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2">
                     {client.name}

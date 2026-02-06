@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import type { VideoEmbed } from '@/lib/types';
 
 interface VideoEmbedsSectionProps {
@@ -68,8 +69,8 @@ export function VideoEmbedsSection({
   const [activeVideo, setActiveVideo] = useState<VideoEmbed | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // Duplicate videos for seamless infinite loop
-  const duplicatedVideos = [...videos, ...videos, ...videos];
+  // Duplicate videos 2x (instead of 3) for seamless infinite loop — less DOM
+  const duplicatedVideos = [...videos, ...videos];
 
   // Drag functionality
   const handleMouseDown = () => {
@@ -165,10 +166,13 @@ export function VideoEmbedsSection({
 
                   {/* Thumbnail or Placeholder - FIRST (background) */}
                   {video.thumbnail_url ? (
-                    <img
+                    <Image
                       src={video.thumbnail_url}
                       alt={video.title}
-                      className="absolute inset-0 w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="300px"
+                      loading="lazy"
                     />
                   ) : (
                     <div className={`absolute inset-0 w-full h-full bg-gradient-to-br ${getPlatformGradient(video.platform)} flex items-center justify-center`}>

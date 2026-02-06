@@ -10,6 +10,9 @@ import { RelatedCaseStudies } from '@/components/public/RelatedCaseStudies';
 import { CTASection } from '@/components/public/CTASection';
 import { getCaseStudyBySlug, getRelatedCaseStudies } from '@/lib/supabase-queries';
 
+// ISR: Revalidate every 60 seconds
+export const revalidate = 60;
+
 interface CaseStudyPageProps {
   params: { slug: string };
 }

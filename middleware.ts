@@ -5,6 +5,7 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+// Only match admin routes — don't intercept public pages or static assets
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/admin/:path*'],
 };

@@ -7,6 +7,9 @@ import { CategoryHeader } from '@/components/public/CategoryHeader';
 import { SearchBar } from '@/components/public/SearchBar';
 import { CTASection } from '@/components/public/CTASection';
 
+// ISR: Revalidate every 60 seconds
+export const revalidate = 60;
+
 interface CategoryPageProps {
   params: { slug: string };
   searchParams: { search?: string };

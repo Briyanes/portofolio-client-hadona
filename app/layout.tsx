@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/public/Header';
-import { Footer } from '@/components/public/Footer';
 import PublicLayout from './PublicLayout';
 import { PixelTrackingWrapper } from '@/components/public/PixelTrackingWrapper';
 
@@ -89,6 +87,12 @@ export default function RootLayout({
   return (
     <html lang="id" className={inter.variable}>
       <head>
+        {/* Preconnect to Supabase for faster image loading */}
+        <link rel="preconnect" href="https://axfpmcrqnewmwcyoxzzi.supabase.co" />
+        <link rel="dns-prefetch" href="https://axfpmcrqnewmwcyoxzzi.supabase.co" />
+        {/* Preload Bootstrap Icons font */}
+        <link rel="preload" href="/fonts/bootstrap-icons.woff2?e34853135f9e39acf64315236852cd5a" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Bootstrap Icons stylesheet */}
         <link rel="stylesheet" href="/css/bootstrap-icons-custom.css" />
       </head>
       <body className="min-h-screen flex flex-col">

@@ -119,7 +119,6 @@ export async function adminGetAllCategories() {
     console.error('Error fetching categories:', error);
     throw error;
   }
-  console.log('Fetched categories:', data?.length || 0, 'items');
   return data as Category[];
 }
 

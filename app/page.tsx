@@ -3,9 +3,7 @@ import { CTASection } from '@/components/public/CTASection';
 import { AboutSection } from '@/components/public/AboutSection';
 import { ClientLogosSection } from '@/components/public/ClientLogosSection';
 import { ServicesOverviewSection } from '@/components/public/ServicesOverviewSection';
-import { TestimonialsSection } from '@/components/public/TestimonialsSection';
-import { CaseStudiesSection } from '@/components/public/CaseStudiesSection';
-import { VideoEmbedsSection } from '@/components/public/VideoEmbedsSection';
+import dynamic from 'next/dynamic';
 import {
   getPublishedCaseStudies,
   getActiveCategories,
@@ -15,9 +13,22 @@ import {
 } from '@/lib/supabase-queries';
 import { AGENCY_INFO, AGENCY_SERVICES } from '@/lib/constants';
 
-// Force dynamic rendering - no caching
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Lazy load heavy sections that are below the fold
+const TestimonialsSection = dynamic(
+  () => import('@/components/public/TestimonialsSection').then(mod => ({ default: mod.TestimonialsSection })),
+  { loading: () => <div className="h-96 animate-pulse bg-gray-100 rounded-2xl" /> }
+);
+const CaseStudiesSection = dynamic(
+  () => import('@/components/public/CaseStudiesSection').then(mod => ({ default: mod.CaseStudiesSection })),
+  { loading: () => <div className="h-96 animate-pulse bg-gray-100 rounded-2xl" /> }
+);
+const VideoEmbedsSection = dynamic(
+  () => import('@/components/public/VideoEmbedsSection').then(mod => ({ default: mod.VideoEmbedsSection })),
+  { loading: () => <div className="h-96 animate-pulse bg-gray-100 rounded-2xl" /> }
+);
+
+// ISR: Revalidate every 60 seconds — keeps page fast with near-realtime data
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [caseStudies, categories, testimonialsFromDB, clientLogos, videoEmbeds] = await Promise.all([
@@ -27,11 +38,6 @@ export default async function HomePage() {
     getActiveClientLogos(),
     getFeaturedVideoEmbeds(10),
   ]);
-
-  // Debug: Log data
-  console.log('Client Logos Data:', clientLogos);
-  console.log('Testimonials from DB:', testimonialsFromDB);
-  console.log('Video Embeds:', videoEmbeds);
 
   // Map testimonials from database to format expected by TestimonialsSection
   const testimonials = testimonialsFromDB.map(t => ({

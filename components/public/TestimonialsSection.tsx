@@ -30,8 +30,8 @@ export function TestimonialsSection({
 
   const displayTestimonials = testimonials.slice(0, limit);
 
-  // Duplicate testimonials for seamless infinite loop
-  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
+  // Duplicate testimonials 2x (instead of 3) for seamless infinite loop — less DOM
+  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials];
 
   // Drag functionality
   const handleMouseDown = () => {
