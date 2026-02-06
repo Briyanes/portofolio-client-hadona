@@ -19,7 +19,7 @@ export default async function AdminProtectedLayout({
   return (
     <div className="min-h-screen bg-gray-50 lg:flex">
       {/* Sidebar - Fixed positioning */}
-      <AdminSidebar />
+      <AdminSidebar userEmail={user.email} />
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 min-h-screen">

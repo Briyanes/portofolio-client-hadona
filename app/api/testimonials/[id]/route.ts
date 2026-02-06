@@ -5,9 +5,10 @@ import { getAdminUserForAction } from '@/lib/admin-auth';
 // GET testimonial by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const auth = await getAdminUserForAction();
 
     if (!auth) {
@@ -17,7 +18,7 @@ export async function GET(
     const { data, error } = await supabaseAdmin
       .from('testimonials')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) throw error;
@@ -42,9 +43,10 @@ export async function GET(
 // PUT update testimonial
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const auth = await getAdminUserForAction();
 
     if (!auth) {
@@ -66,7 +68,7 @@ export async function PUT(
         case_study_id: case_study_id || null,
         updated_by: auth.user.id,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -85,9 +87,10 @@ export async function PUT(
 // DELETE testimonial
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const auth = await getAdminUserForAction();
 
     if (!auth) {
@@ -97,7 +100,7 @@ export async function DELETE(
     const { error } = await supabaseAdmin
       .from('testimonials')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) throw error;
 

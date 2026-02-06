@@ -5,13 +5,15 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { CategoryForm } from '@/components/admin/CategoryForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { categorySchema } from '@/lib/validators';
 
 export const dynamic = 'force-dynamic';
 
 export default async function EditCategoryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const auth = await getAdminUserWithToken();
 
@@ -19,7 +21,9 @@ export default async function EditCategoryPage({
     redirect('/admin/login');
   }
 
-  const category = await adminGetCategoryById(params.id);
+  const { id } = await params;
+
+  const category = await adminGetCategoryById(id);
 
   if (!category) {
     redirect('/admin/categories');
@@ -54,28 +58,41 @@ export default async function EditCategoryPage({
         is_active,
       };
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/categories/${params.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        cache: 'no-store',
-      });
+      // Validate with Zod
+      const validatedData = categorySchema.parse(data);
 
-      if (!response.ok) {
-        const result = await response.json();
-        return { error: result.error || 'Failed to update category' };
+      // Check if slug is unique (exclude current)
+      if (validatedData.slug) {
+        const { data: existing } = await supabaseAdmin
+          .from('categories')
+          .select('id')
+          .eq('slug', validatedData.slug)
+          .neq('id', id)
+          .single();
+
+        if (existing) {
+          return { error: 'Slug sudah digunakan' };
+        }
       }
+
+      // Update directly via supabaseAdmin
+      const { error } = await supabaseAdmin
+        .from('categories')
+        .update(validatedData)
+        .eq('id', id);
+
+      if (error) throw error;
 
       // Revalidate paths
       revalidatePath('/admin/categories');
-      revalidatePath(`/admin/categories/${params.id}`);
+      revalidatePath(`/admin/categories/${id}`);
 
       // Return success - client will handle redirect
       return { success: true };
     } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return { error: 'Validation error: ' + error.errors.map((e: any) => e.message).join(', ') };
+      }
       return { error: error.message || 'Something went wrong' };
     }
   }

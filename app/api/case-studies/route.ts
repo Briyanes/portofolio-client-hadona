@@ -1,49 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { caseStudySchema } from '@/lib/validators';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getAdminUserForAction } from '@/lib/admin-auth';
 
 // GET all case studies (admin only)
 export async function GET(request: NextRequest) {
   try {
-    // Get session from cookies
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { data: caseStudies, error } = await supabaseAdmin
@@ -69,50 +35,13 @@ export async function GET(request: NextRequest) {
 // POST create new case study
 export async function POST(request: NextRequest) {
   try {
-    // Get session from cookies
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      console.error('Session error:', sessionError);
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      console.error('Auth error:', authError);
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      console.error('User is not admin:', user.id);
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const formData = await request.formData();
-    console.log('Received form data keys:', Array.from(formData.keys()));
 
     // Helper untuk mengambil string dari FormData
     const getString = (key: string): string => {
@@ -227,8 +156,8 @@ export async function POST(request: NextRequest) {
       .from('case_studies')
       .insert({
         ...validatedData,
-        created_by: user.id,
-        updated_by: user.id,
+        created_by: auth.user.id,
+        updated_by: auth.user.id,
       })
       .select()
       .single();

@@ -4,6 +4,8 @@ import { getAdminUserWithToken } from '@/lib/admin-auth';
 import { CategoryForm } from '@/components/admin/CategoryForm';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
 import Link from 'next/link';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { categorySchema } from '@/lib/validators';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +26,6 @@ export default async function NewCategoryPage() {
       return { error: 'Unauthorized' };
     }
 
-    const { accessToken } = auth;
-
     try {
       const name = formData.get('name') as string;
       const slug = formData.get('slug') as string;
@@ -45,23 +45,28 @@ export default async function NewCategoryPage() {
         is_active,
       };
 
-      console.log('Creating category with data:', JSON.stringify(data, null, 2));
+      // Validate with Zod
+      const validatedData = categorySchema.parse(data);
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/categories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        cache: 'no-store',
-      });
+      // Check if slug is unique
+      if (validatedData.slug) {
+        const { data: existing } = await supabaseAdmin
+          .from('categories')
+          .select('id')
+          .eq('slug', validatedData.slug)
+          .single();
 
-      if (!response.ok) {
-        const result = await response.json();
-        console.error('API Error:', result);
-        return { error: result.error || 'Failed to create category' };
+        if (existing) {
+          return { error: 'Slug sudah digunakan' };
+        }
       }
+
+      // Insert directly via supabaseAdmin
+      const { error } = await supabaseAdmin
+        .from('categories')
+        .insert(validatedData);
+
+      if (error) throw error;
 
       // Revalidate paths
       revalidatePath('/admin/categories');
@@ -70,7 +75,9 @@ export default async function NewCategoryPage() {
       // Return success - client will handle redirect
       return { success: true };
     } catch (error: any) {
-      console.error('Create error:', error);
+      if (error.name === 'ZodError') {
+        return { error: 'Validation error: ' + error.errors.map((e: any) => e.message).join(', ') };
+      }
       return { error: error.message || 'Something went wrong' };
     }
   }

@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function EditClientLogoPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   try {
     const auth = await getAdminUserWithToken();
@@ -21,7 +21,9 @@ export default async function EditClientLogoPage({
       redirect('/admin/login');
     }
 
-    const clientLogo = await adminGetClientLogoById(params.id);
+    const { id } = await params;
+
+    const clientLogo = await adminGetClientLogoById(id);
 
     if (!clientLogo) {
       redirect('/admin/client-logos');
@@ -54,7 +56,7 @@ export default async function EditClientLogoPage({
             display_order,
             updated_by: auth.user.id,
           })
-          .eq('id', params.id);
+          .eq('id', id);
 
         if (error) {
           console.error('Supabase update error:', error);
@@ -62,7 +64,7 @@ export default async function EditClientLogoPage({
         }
 
         revalidatePath('/admin/client-logos');
-        revalidatePath(`/admin/client-logos/${params.id}`);
+        revalidatePath(`/admin/client-logos/${id}`);
         revalidatePath('/');
 
         return { success: true };

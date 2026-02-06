@@ -13,8 +13,6 @@ export async function updateCaseStudy(id: string, formData: FormData) {
   }
 
   try {
-    console.log('Updating case study:', id);
-    console.log('FormData keys:', Array.from(formData.keys()));
 
     // Helper untuk mengambil string dari FormData
     const getString = (key: string): string => {
@@ -134,8 +132,6 @@ export async function updateCaseStudy(id: string, formData: FormData) {
       .single();
 
     if (error) throw error;
-
-    console.log('✓ Case study updated successfully');
 
     // Revalidate paths
     revalidatePath('/admin/case-studies');

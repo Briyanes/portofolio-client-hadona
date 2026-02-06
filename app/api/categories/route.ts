@@ -1,49 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { categorySchema } from '@/lib/validators';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getAdminUserForAction } from '@/lib/admin-auth';
 
 // GET all categories (admin only)
 export async function GET(request: NextRequest) {
   try {
-    // Get session from cookies
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { data: categories, error } = await supabaseAdmin
@@ -66,43 +32,10 @@ export async function GET(request: NextRequest) {
 // POST create new category
 export async function POST(request: NextRequest) {
   try {
-    // Get session from cookies
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -134,8 +67,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) throw error;
-
-    console.log('✓ Category created successfully:', newCategory?.name, '(ID:', newCategory?.id + ')');
 
     return NextResponse.json({ data: newCategory }, { status: 201 });
   } catch (error: any) {

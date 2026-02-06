@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import type { CaseStudyVideoEmbed } from '@/lib/types';
 
 interface VideoEmbedItemProps {
@@ -15,36 +16,31 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleThumbnailClick = () => {
-    console.log('Thumbnail button clicked, opening file dialog...');
     fileInputRef.current?.click();
   };
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('File input changed');
     const file = e.target.files?.[0];
     if (!file) {
-      console.log('No file selected');
       return;
     }
-    console.log('File selected:', file.name, file.type, file.size);
 
     // Validation
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      alert('Hanya file JPEG, PNG, dan WebP yang diperbolehkan');
+      toast.error('Hanya file JPEG, PNG, dan WebP yang diperbolehkan');
       return;
     }
 
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      alert('Ukuran file maksimal 5MB');
+      toast.error('Ukuran file maksimal 5MB');
       return;
     }
 
     setIsUploading(true);
 
     try {
-      console.log('Starting upload...');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', 'video-thumbnails');
@@ -55,8 +51,6 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
         body: formData,
       });
 
-      console.log('Upload response status:', response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Upload error:', errorData);
@@ -64,12 +58,11 @@ export function VideoEmbedItem({ video, index, onUpdate, onRemove }: VideoEmbedI
       }
 
       const data = await response.json();
-      console.log('Upload success:', data);
       onUpdate(index, 'thumbnail_url', data.url);
     } catch (err: unknown) {
       console.error('Upload exception:', err);
       const errorMessage = err instanceof Error ? err.message : 'Gagal mengupload gambar';
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }

@@ -83,6 +83,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    // Verify admin user — pixel settings contain sensitive tracking IDs
+    const auth = await getAdminUserWithToken();
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { getPixelSettings } = await import('@/lib/supabase-queries');
     const settings = await getPixelSettings();
 

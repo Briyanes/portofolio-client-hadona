@@ -23,11 +23,12 @@ const RelatedCaseStudies = dynamic(() => import('@/components/public/RelatedCase
 export const revalidate = 60;
 
 interface CaseStudyPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: CaseStudyPageProps) {
-  const caseStudy = await getCaseStudyBySlug(params.slug);
+  const { slug } = await params;
+  const caseStudy = await getCaseStudyBySlug(slug);
 
   if (!caseStudy) {
     return {
@@ -48,7 +49,8 @@ export async function generateMetadata({ params }: CaseStudyPageProps) {
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
-  const caseStudy = await getCaseStudyBySlug(params.slug);
+  const { slug } = await params;
+  const caseStudy = await getCaseStudyBySlug(slug);
 
   if (!caseStudy) {
     notFound();

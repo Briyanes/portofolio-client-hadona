@@ -76,6 +76,8 @@ export default async function EditVideoEmbedPage({ params }: EditVideoEmbedPageP
 
       revalidatePath('/admin/video-embeds');
       revalidatePath('/');
+
+      return { success: true };
     } catch (error: any) {
       console.error('Error updating video embed:', error);
       return { error: error.message || 'Gagal memperbarui video' };

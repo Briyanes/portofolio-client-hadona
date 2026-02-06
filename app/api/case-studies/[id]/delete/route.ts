@@ -5,9 +5,10 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Get user from session cookie
     const supabase = await createSupabaseAdminClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -32,7 +33,7 @@ export async function POST(
     const { error } = await supabaseAdmin
       .from('case_studies')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) throw error;
 

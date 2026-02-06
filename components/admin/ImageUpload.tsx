@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { ImageUploadProps } from '@/lib/types';
 
 export function ImageUpload({
@@ -13,12 +13,10 @@ export function ImageUpload({
   const [preview, setPreview] = useState<string | undefined>(defaultValue);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = useCallback(async (file: File) => {
     // Validation
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
@@ -36,15 +34,13 @@ export function ImageUpload({
     setIsUploading(true);
 
     try {
-      // Upload to server
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('folder', name); // use field name as folder
+      formData.append('folder', name);
 
-      // Use relative URL - cookies will be sent automatically
       const response = await fetch('/api/upload', {
         method: 'POST',
-        credentials: 'include', // Include cookies
+        credentials: 'include',
         body: formData,
       });
 
@@ -54,20 +50,43 @@ export function ImageUpload({
       }
 
       const data = await response.json();
-
-      // Set preview with uploaded URL
       setPreview(data.url);
       setIsUploading(false);
     } catch (err: any) {
       setError(err.message || 'Gagal mengupload gambar');
       setIsUploading(false);
-      // Reset preview on error
       setPreview(undefined);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
     }
+  }, [name]);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processFile(file);
   };
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) await processFile(file);
+  }, [processFile]);
 
   const handleRemove = () => {
     setPreview(undefined);
@@ -121,7 +140,14 @@ export function ImageUpload({
       ) : (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-hadona-primary transition-colors"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            isDragging
+              ? 'border-hadona-primary bg-hadona-primary/5'
+              : 'border-gray-300 hover:border-hadona-primary'
+          }`}
         >
           {isUploading ? (
             <p className="text-gray-600">Uploading...</p>

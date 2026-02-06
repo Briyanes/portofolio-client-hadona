@@ -9,6 +9,7 @@ import { ImageUpload } from './ImageUpload';
 import { MultipleImageUpload } from './MultipleImageUpload';
 import { VideoEmbedItem } from './VideoEmbedItem';
 import { Category, CaseStudyFormData, CaseStudyVideoEmbed } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface CaseStudyFormProps {
   initialData?: Partial<CaseStudyFormData> & { video_embeds?: CaseStudyVideoEmbed[] };
@@ -82,9 +83,9 @@ export function CaseStudyForm({
     const formData = new FormData(form);
 
     // Validate required image fields (ImageUpload uses name prop directly)
-    const thumbnailUrl = formData.get('thumbnail');
+    const thumbnailUrl = formData.get('thumbnail_url');
     if (!thumbnailUrl || typeof thumbnailUrl !== 'string' || !thumbnailUrl.trim()) {
-      alert('Thumbnail wajib diupload');
+      toast.error('Thumbnail wajib diupload');
       return;
     }
 
@@ -110,7 +111,7 @@ export function CaseStudyForm({
 
         // Check if there's an error
         if (result && 'error' in result && result.error) {
-          alert(`Error: ${result.error}`);
+          toast.error(`Error: ${result.error}`);
           return;
         }
 
@@ -119,7 +120,7 @@ export function CaseStudyForm({
         router.refresh();
       } catch (error: any) {
         console.error('Submit error:', error);
-        alert(`Error: ${error?.message || 'Something went wrong'}`);
+        toast.error(`Error: ${error?.message || 'Something went wrong'}`);
       }
     });
   };
@@ -207,7 +208,7 @@ export function CaseStudyForm({
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ImageUpload
-            name="thumbnail"
+            name="thumbnail_url"
             label="Thumbnail"
             defaultValue={initialData?.thumbnail_url || ''}
             recommendedSize="1200x630px"
@@ -215,14 +216,14 @@ export function CaseStudyForm({
           />
 
           <ImageUpload
-            name="hero_image"
+            name="hero_image_url"
             label="Hero Image"
             defaultValue={initialData?.hero_image_url || ''}
             recommendedSize="1920x1080px"
           />
 
           <ImageUpload
-            name="client_logo"
+            name="client_logo_url"
             label="Logo Klien"
             defaultValue={initialData?.client_logo_url || ''}
             recommendedSize="500x500px"
@@ -497,7 +498,7 @@ export function CaseStudyForm({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => window.location.href = '/admin/case-studies'}
+          onClick={() => router.push('/admin/case-studies')}
         >
           Batal
         </Button>

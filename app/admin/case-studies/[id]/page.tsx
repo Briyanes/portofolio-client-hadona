@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export default async function EditCaseStudyPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const auth = await getAdminUserWithToken();
 
@@ -19,9 +19,11 @@ export default async function EditCaseStudyPage({
     redirect('/admin/login');
   }
 
+  const { id } = await params;
+
   const [categories, caseStudy] = await Promise.all([
     adminGetAllCategories(),
-    adminGetCaseStudyById(params.id),
+    adminGetCaseStudyById(id),
   ]);
 
   if (!caseStudy) {
@@ -72,7 +74,7 @@ export default async function EditCaseStudyPage({
               services: caseStudy.services || '',
             }}
             categories={categories}
-            onSubmit={updateCaseStudy.bind(null, params.id)}
+            onSubmit={updateCaseStudy.bind(null, id)}
           />
         </div>
       </div>

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import type { VideoEmbedFormData } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface VideoEmbedFormProps {
   initialData?: Partial<VideoEmbedFormData>;
@@ -71,7 +72,7 @@ export function VideoEmbedForm({
         const result = await onSubmit(formData);
 
         if (result && 'error' in result && result.error) {
-          alert(`Error: ${result.error}`);
+          toast.error(`Error: ${result.error}`);
           return;
         }
 
@@ -80,7 +81,7 @@ export function VideoEmbedForm({
       } catch (error: unknown) {
         console.error('Submit error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan data';
-        alert(`Error: ${errorMessage}`);
+        toast.error(`Error: ${errorMessage}`);
       }
     });
   };

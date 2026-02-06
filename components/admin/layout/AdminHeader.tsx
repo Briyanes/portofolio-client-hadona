@@ -1,29 +1,44 @@
 'use client';
 
-import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
+const PAGE_TITLES: Record<string, string> = {
+  '/admin': 'Dashboard',
+  '/admin/case-studies': 'Case Studies',
+  '/admin/categories': 'Categories',
+  '/admin/testimonials': 'Testimonials',
+  '/admin/client-logos': 'Client Logos',
+  '/admin/video-embeds': 'Video Embeds',
+  '/admin/settings': 'Settings',
+};
+
+function getPageTitle(pathname: string): string {
+  // Exact match first
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+  // Check if it's a sub-route (e.g. /admin/case-studies/new → Case Studies)
+  const parentPath = Object.keys(PAGE_TITLES)
+    .filter((p) => p !== '/admin')
+    .find((p) => pathname.startsWith(p));
+  return parentPath ? PAGE_TITLES[parentPath] : 'Dashboard';
+}
+
 export function AdminHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
     setIsLoading(true);
 
     try {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
       await supabase.auth.signOut();
       toast.success('Logged out successfully');
       router.push('/admin/login');
-    } catch (error) {
+    } catch {
       toast.error('Failed to logout');
-      console.error('Logout error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +50,7 @@ export function AdminHeader() {
         <div className="flex items-center justify-between py-3 sm:py-4 gap-2">
           {/* Page Title */}
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate">Dashboard</h1>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate">{getPageTitle(pathname)}</h1>
           </div>
 
           {/* Actions */}

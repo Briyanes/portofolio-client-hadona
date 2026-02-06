@@ -1,58 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { categorySchema } from '@/lib/validators';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getAdminUserForAction } from '@/lib/admin-auth';
 
 // GET single category
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get session from cookies
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const { id } = await params;
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { data: category, error } = await supabaseAdmin
       .from('categories')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) throw error;
@@ -74,46 +41,14 @@ export async function GET(
 // PUT update category
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get session from cookies
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const { id } = await params;
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -127,7 +62,7 @@ export async function PUT(
         .from('categories')
         .select('id')
         .eq('slug', validatedData.slug)
-        .neq('id', params.id)
+        .neq('id', id)
         .single();
 
       if (existing) {
@@ -142,7 +77,7 @@ export async function PUT(
     const { data: updatedCategory, error } = await supabaseAdmin
       .from('categories')
       .update(validatedData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -169,59 +104,27 @@ export async function PUT(
 // DELETE category
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get session from cookies
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const { id } = await params;
+    const auth = await getAdminUserForAction();
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .eq('is_active', true)
-      .single();
-
-    if (!adminUser) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Set category_id to NULL for all case studies using this category
     await supabaseAdmin
       .from('case_studies')
       .update({ category_id: null })
-      .eq('category_id', params.id);
+      .eq('category_id', id);
 
     // Delete category
     const { error } = await supabaseAdmin
       .from('categories')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) throw error;
 

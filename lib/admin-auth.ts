@@ -10,9 +10,9 @@ import type { User } from '@supabase/supabase-js';
 
 export async function getAdminUserWithToken(): Promise<{ user: User; accessToken: string } | null> {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
-    // Create a Supabase client to get the session
+    // Create a Supabase client to verify user
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -25,15 +25,8 @@ export async function getAdminUserWithToken(): Promise<{ user: User; accessToken
       }
     );
 
-    // Get the session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      return null;
-    }
-
-    // Verify user is admin using the access token from session
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
+    // Use getUser() for server-side verification (not getSession() which reads cookies without verification)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return null;
     }
@@ -49,8 +42,11 @@ export async function getAdminUserWithToken(): Promise<{ user: User; accessToken
       return null;
     }
 
-    return { user, accessToken: session.access_token };
-  } catch (error) {
+    // Get session for access token (user already verified above)
+    const { data: { session } } = await supabase.auth.getSession();
+
+    return { user, accessToken: session?.access_token || '' };
+  } catch {
     return null;
   }
 }
@@ -59,7 +55,7 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
   try {
     const cookieStore = await cookies();
 
-    // Create a Supabase client to get the session
+    // Create a Supabase client to verify user
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -72,49 +68,13 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
       }
     );
 
-    // Get the session with refresh
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      return null;
-    }
-
-    // Try to refresh session if access token is expired
-    const currentTime = Math.floor(Date.now() / 1000);
-    if (session.expires_at && session.expires_at < currentTime) {
-      const { data: { session: refreshedSession }, error: refreshError } =
-        await supabase.auth.refreshSession();
-
-      if (refreshError || !refreshedSession) {
-        return null;
-      }
-
-      // Verify user is admin using the refreshed access token
-      const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(refreshedSession.access_token);
-      if (authError || !user) {
-        return null;
-      }
-
-      const { data: adminUser } = await supabaseAdmin
-        .from('admin_users')
-        .select('*')
-        .eq('id', user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!adminUser) {
-        return null;
-      }
-
-      return { user, accessToken: refreshedSession.access_token };
-    }
-
-    // Verify user is admin using the access token from session
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(session.access_token);
+    // Use getUser() for server-side verification (not getSession() which reads cookies without verification)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return null;
     }
 
+    // Check if user is admin
     const { data: adminUser } = await supabaseAdmin
       .from('admin_users')
       .select('*')
@@ -126,15 +86,18 @@ export async function getAdminUserForAction(): Promise<{ user: User; accessToken
       return null;
     }
 
-    return { user, accessToken: session.access_token };
-  } catch (error) {
+    // Get session for access token (user already verified above)
+    const { data: { session } } = await supabase.auth.getSession();
+
+    return { user, accessToken: session?.access_token || '' };
+  } catch {
     return null;
   }
 }
 
 // Legacy functions for backward compatibility
 export async function createSupabaseAdminClient() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

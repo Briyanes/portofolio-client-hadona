@@ -54,6 +54,8 @@ export default async function NewVideoEmbedPage() {
 
       revalidatePath('/admin/video-embeds');
       revalidatePath('/');
+
+      return { success: true };
     } catch (error: any) {
       console.error('Error creating video embed:', error);
       return { error: error.message || 'Gagal menyimpan video' };

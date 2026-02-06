@@ -30,8 +30,6 @@ export default async function NewCaseStudyPage() {
     }
 
     try {
-      console.log('Creating case study...');
-      console.log('FormData keys:', Array.from(formData.keys()));
 
       // Helper untuk mengambil string dari FormData
       const getString = (key: string): string => {
@@ -150,8 +148,6 @@ export default async function NewCaseStudyPage() {
         .single();
 
       if (error) throw error;
-
-      console.log('✓ Case study created successfully');
 
       // Revalidate paths
       revalidatePath('/admin/case-studies');

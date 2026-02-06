@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface DeleteVideoEmbedButtonProps {
   id: string;
@@ -28,7 +29,7 @@ export function DeleteVideoEmbedButton({ id, title }: DeleteVideoEmbedButtonProp
         router.refresh();
       } catch (error: any) {
         console.error('Delete error:', error);
-        alert(`Error: ${error?.message || 'Terjadi kesalahan saat menghapus data'}`);
+        toast.error(`Error: ${error?.message || 'Terjadi kesalahan saat menghapus data'}`);
       }
     });
 

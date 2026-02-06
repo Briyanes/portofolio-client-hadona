@@ -11,12 +11,13 @@ import { CTASection } from '@/components/public/CTASection';
 export const revalidate = 60;
 
 interface CategoryPageProps {
-  params: { slug: string };
-  searchParams: { search?: string };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ search?: string }>;
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.slug);
+  const { slug } = await params;
+  const category = await getCategoryBySlug(slug);
 
   if (!category) {
     return {
@@ -34,15 +35,17 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.slug);
+  const { slug } = await params;
+  const { search } = await searchParams;
+  const category = await getCategoryBySlug(slug);
 
   if (!category) {
     notFound();
   }
 
   const caseStudies = await getPublishedCaseStudies({
-    category: params.slug,
-    search: searchParams.search,
+    category: slug,
+    search,
   });
 
   return (
@@ -106,18 +109,18 @@ export default async function CategoryPage({
               <i className="bi bi-inbox text-5xl text-gray-400"></i>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              {searchParams.search
+              {search
                 ? 'Tidak Ada Hasil Ditemukan'
                 : 'Belum Ada Studi Kasus'}
             </h3>
             <p className="text-gray-600 max-w-md mx-auto mb-6">
-              {searchParams.search
-                ? `Tidak ada studi kasus yang cocok dengan pencarian "${searchParams.search}" di kategori ini`
+              {search
+                ? `Tidak ada studi kasus yang cocok dengan pencarian "${search}" di kategori ini`
                 : 'Belum ada studi kasus untuk kategori ini. Kunjungi lagi nanti!'}
             </p>
-            {searchParams.search && (
+            {search && (
               <Link
-                href={`/kategori/${params.slug}`}
+                href={`/kategori/${slug}`}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-hadona-primary text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
               >
                 <i className="bi bi-x-circle"></i>

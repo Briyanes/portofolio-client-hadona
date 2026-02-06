@@ -42,7 +42,7 @@ const navItems = [
   },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -111,7 +111,7 @@ export function AdminSidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white truncate">Admin</p>
-                <p className="text-xs text-gray-400 truncate">admin@hadona.id</p>
+                <p className="text-xs text-gray-400 truncate">{userEmail || 'Admin'}</p>
               </div>
             </div>
           </div>

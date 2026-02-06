@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function EditTestimonialPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   try {
     const auth = await getAdminUserWithToken();
@@ -21,7 +21,9 @@ export default async function EditTestimonialPage({
       redirect('/admin/login');
     }
 
-    const testimonial = await adminGetTestimonialById(params.id);
+    const { id } = await params;
+
+    const testimonial = await adminGetTestimonialById(id);
 
     if (!testimonial) {
       redirect('/admin/testimonials');
@@ -56,7 +58,7 @@ export default async function EditTestimonialPage({
             display_order,
             updated_by: auth.user.id,
           })
-          .eq('id', params.id);
+          .eq('id', id);
 
         if (error) {
           console.error('Supabase update error:', error);
@@ -64,7 +66,7 @@ export default async function EditTestimonialPage({
         }
 
         revalidatePath('/admin/testimonials');
-        revalidatePath(`/admin/testimonials/${params.id}`);
+        revalidatePath(`/admin/testimonials/${id}`);
         revalidatePath('/');
 
         return { success: true };

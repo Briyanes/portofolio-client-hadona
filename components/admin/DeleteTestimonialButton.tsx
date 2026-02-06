@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface DeleteTestimonialButtonProps {
   testimonialId: string;
@@ -26,7 +27,7 @@ export function DeleteTestimonialButton({ testimonialId, testimonialTitle }: Del
         const result = await response.json();
 
         if (!response.ok) {
-          alert(`Error: ${result.error || 'Failed to delete testimonial'}`);
+          toast.error(`Error: ${result.error || 'Failed to delete testimonial'}`);
           return;
         }
 
@@ -34,7 +35,7 @@ export function DeleteTestimonialButton({ testimonialId, testimonialTitle }: Del
         router.refresh();
       } catch (error: any) {
         console.error('Delete error:', error);
-        alert(`Error: ${error?.message || 'Failed to delete testimonial'}`);
+        toast.error(`Error: ${error?.message || 'Failed to delete testimonial'}`);
       }
     });
   };

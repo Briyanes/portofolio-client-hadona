@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import type { TestimonialFormData } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface TestimonialFormProps {
   initialData?: Partial<TestimonialFormData>;
@@ -30,7 +31,7 @@ export function TestimonialForm({
         const result = await onSubmit(formData);
 
         if (result && 'error' in result && result.error) {
-          alert(`Error: ${result.error}`);
+          toast.error(`Error: ${result.error}`);
           return;
         }
 
@@ -38,7 +39,7 @@ export function TestimonialForm({
         router.refresh();
       } catch (error: any) {
         console.error('Submit error:', error);
-        alert(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
+        toast.error(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
       }
     });
   };

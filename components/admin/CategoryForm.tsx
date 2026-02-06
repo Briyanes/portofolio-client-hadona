@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import type { CategoryFormData } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 interface CategoryFormProps {
   initialData?: Partial<CategoryFormData>;
@@ -34,6 +35,7 @@ export function CategoryForm({
   isSubmitting = false,
 }: CategoryFormProps) {
   const [slug, setSlug] = useState(initialData?.slug || '');
+  const [color, setColor] = useState(initialData?.color || '#2B46BB');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -61,7 +63,7 @@ export function CategoryForm({
 
         // Check if there's an error
         if (result && 'error' in result && result.error) {
-          alert(`Error: ${result.error}`);
+          toast.error(`Error: ${result.error}`);
           return;
         }
 
@@ -70,7 +72,7 @@ export function CategoryForm({
         router.refresh();
       } catch (error: any) {
         console.error('Submit error:', error);
-        alert(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
+        toast.error(`Error: ${error?.message || 'Terjadi kesalahan saat menyimpan data'}`);
       }
     });
   };
@@ -133,12 +135,14 @@ export function CategoryForm({
               <input
                 type="color"
                 name="color"
-                defaultValue={initialData?.color || '#2B46BB'}
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
                 className="h-10 w-20 rounded border border-gray-300"
               />
               <Input
                 type="text"
-                defaultValue={initialData?.color || '#2B46BB'}
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
                 placeholder="#2B46BB"
                 className="flex-1"
               />
@@ -170,7 +174,7 @@ export function CategoryForm({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => window.location.href = '/admin/categories'}
+          onClick={() => router.push('/admin/categories')}
           disabled={isPending}
         >
           Batal
