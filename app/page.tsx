@@ -3,6 +3,7 @@ import { CTASection } from '@/components/public/CTASection';
 import { AboutSection } from '@/components/public/AboutSection';
 import { ClientLogosSection } from '@/components/public/ClientLogosSection';
 import { ServicesOverviewSection } from '@/components/public/ServicesOverviewSection';
+import { TrustContactSection } from '@/components/public/TrustContactSection';
 import dynamic from 'next/dynamic';
 import {
   getPublishedCaseStudies,
@@ -95,7 +96,10 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 10. CTA Section */}
+      {/* 10. Trust & Contact Section */}
+      <TrustContactSection />
+
+      {/* 11. CTA Section */}
       {caseStudies.length > 0 && <CTASection variant="home" />}
     </main>
   );

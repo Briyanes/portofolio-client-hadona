@@ -5,9 +5,17 @@ export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://portofolio.ha
 // Contact Information (CENTRALIZED)
 export const CONTACT_INFO = {
   whatsapp: '6285158000123',
-  email: 'hi@hadona.id',
+  email: 'support@hadona.id',
   website: 'https://hadona.id',
   phone: '+62818 0575 7585',
+} as const;
+
+// Social Media Links
+export const SOCIAL_LINKS = {
+  instagram: { url: 'https://www.instagram.com/hadona.id', label: '@hadona.id' },
+  linkedin: { url: 'https://www.linkedin.com/company/pt-hadona-digital-media/', label: 'PT. Hadona Digital Media' },
+  facebook: { url: 'https://www.facebook.com/profile.php?id=61552533756847', label: 'Hadona Digital Media' },
+  tiktok: { url: 'https://www.tiktok.com/@hadona.id', label: '@hadona.id' },
 } as const;
 
 // Helper to format WhatsApp URL
