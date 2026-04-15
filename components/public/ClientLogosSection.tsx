@@ -28,12 +28,12 @@ export function ClientLogosSection({
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    setIsPaused(false);
+    // Don't unpause here — mouse is still over the slider, wrapper handles unpause on leave
   };
 
   const handleMouseLeave = () => {
     setIsDragging(false);
-    setIsPaused(false);
+    // isPaused managed by wrapper's onMouseEnter/onMouseLeave
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -70,14 +70,18 @@ export function ClientLogosSection({
       )}
 
       {/* Slider Container with Fade Edges */}
-      <div className="relative overflow-hidden">
+      <div
+        className="relative overflow-hidden"
+        onMouseEnter={() => !isDragging && setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         {/* Fade Edge - Left */}
         <div className="absolute inset-y-0 left-0 w-24 slider-fade-left z-10 pointer-events-none"></div>
 
         {/* Slider Track */}
         <div
           ref={sliderRef}
-          className={`flex gap-8 md:gap-12 animate-scroll slider-track ${
+          className={`flex items-center gap-8 md:gap-12 animate-scroll slider-track ${
             isPaused ? 'pause-animation' : ''
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
@@ -86,7 +90,6 @@ export function ClientLogosSection({
           onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          onMouseEnter={() => !isDragging && setIsPaused(true)}
           style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {duplicatedClients.map((client, index) => {
@@ -107,23 +110,23 @@ export function ClientLogosSection({
             return (
               <div
                 key={`${client.name}-${index}`}
-                className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
+                className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
               >
                 {isValidLogo ? (
-                  <div className="relative h-16 md:h-20 lg:h-24 w-32 md:w-36">
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full bg-gray-50 border border-gray-100 overflow-hidden">
                     <Image
                       src={logoSrc}
                       alt={client.name}
                       fill
-                      className="object-contain"
-                      sizes="144px"
+                      className="object-contain p-3 md:p-4"
+                      sizes="112px"
                       loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none';
                         const parent = (e.target as HTMLImageElement).parentElement;
                         if (parent && !parent.querySelector('.fallback-text')) {
                           const fallback = document.createElement('div');
-                          fallback.className = 'fallback-text h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2';
+                          fallback.className = 'fallback-text absolute inset-0 flex items-center justify-center text-xs text-gray-500 text-center p-2 font-semibold';
                           fallback.textContent = client.name;
                           parent.appendChild(fallback);
                         }
@@ -131,7 +134,7 @@ export function ClientLogosSection({
                     />
                   </div>
                 ) : (
-                  <div className="h-16 md:h-20 lg:h-24 w-32 flex items-center justify-center bg-gray-100 rounded-lg text-xs text-gray-500 text-center p-2">
+                  <div className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-xs text-gray-500 text-center p-2 font-semibold">
                     {client.name}
                   </div>
                 )}
