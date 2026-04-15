@@ -31,7 +31,7 @@ export function DeleteClientLogoButton({ logoId, logoName }: DeleteClientLogoBut
           return;
         }
 
-        // Success - refresh the page
+        toast.success('Logo klien berhasil dihapus');
         router.refresh();
       } catch (error: any) {
         console.error('Delete error:', error);

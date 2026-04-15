@@ -26,6 +26,7 @@ export function DeleteVideoEmbedButton({ id, title }: DeleteVideoEmbedButtonProp
           throw new Error(error.error || 'Failed to delete');
         }
 
+        toast.success('Video berhasil dihapus');
         router.refresh();
       } catch (error: any) {
         console.error('Delete error:', error);

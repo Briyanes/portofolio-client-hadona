@@ -63,6 +63,7 @@ export default async function NewCaseStudyPage() {
       // Revalidate paths
       revalidatePath('/admin/case-studies');
       revalidatePath('/admin/case-studies/new');
+      revalidatePath('/');
 
       // Revalidate public page if slug exists
       if (validatedData.slug) {

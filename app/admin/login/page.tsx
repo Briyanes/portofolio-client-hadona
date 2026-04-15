@@ -6,8 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { loginAction } from '@/lib/actions';
 
-export const dynamic = 'force-dynamic';
-
 export default function LoginPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();

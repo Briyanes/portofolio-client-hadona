@@ -58,6 +58,9 @@ export async function updateCaseStudy(id: string, formData: FormData) {
       revalidatePath(`/studi-kasus/${caseStudyData.slug}`);
     }
 
+    // Revalidate homepage
+    revalidatePath('/');
+
     return { success: true };
   } catch (error: any) {
     console.error('Update error:', error);

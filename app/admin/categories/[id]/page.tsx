@@ -86,6 +86,7 @@ export default async function EditCategoryPage({
       // Revalidate paths
       revalidatePath('/admin/categories');
       revalidatePath(`/admin/categories/${id}`);
+      revalidatePath('/');
 
       // Return success - client will handle redirect
       return { success: true };

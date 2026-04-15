@@ -29,6 +29,13 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Fetch case study data to get image URLs for cleanup
+    const { data: caseStudy } = await supabaseAdmin
+      .from('case_studies')
+      .select('thumbnail_url, hero_image_url, client_logo_url, gallery_urls')
+      .eq('id', id)
+      .single();
+
     // Delete case study
     const { error } = await supabaseAdmin
       .from('case_studies')
@@ -37,9 +44,15 @@ export async function POST(
 
     if (error) throw error;
 
+    // Clean up orphaned images (best-effort)
+    if (caseStudy) {
+      const { cleanupCaseStudyImages } = await import('@/lib/cleanup-storage');
+      await cleanupCaseStudyImages(caseStudy);
+    }
+
     // Revalidate the case studies page
     revalidatePath('/admin/case-studies');
-    revalidatePath('/admin/case-studies/[id]');
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

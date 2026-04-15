@@ -13,7 +13,11 @@ export async function getPublishedCaseStudies(filters: CaseStudyFilters = {}) {
   }
 
   if (filters.search) {
-    query = query.or(`title.ilike.%${filters.search}%,client_name.ilike.%${filters.search}%,results.ilike.%${filters.search}%`);
+    // Sanitize search input to prevent PostgREST filter syntax injection
+    const sanitizedSearch = filters.search.replace(/[%_(),.]/g, '');
+    if (sanitizedSearch.trim()) {
+      query = query.or(`title.ilike.%${sanitizedSearch}%,client_name.ilike.%${sanitizedSearch}%,results.ilike.%${sanitizedSearch}%`);
+    }
   }
 
   const { data, error } = await query

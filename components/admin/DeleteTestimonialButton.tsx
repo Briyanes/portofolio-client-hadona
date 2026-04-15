@@ -31,7 +31,7 @@ export function DeleteTestimonialButton({ testimonialId, testimonialTitle }: Del
           return;
         }
 
-        // Success - refresh the page
+        toast.success('Testimoni berhasil dihapus');
         router.refresh();
       } catch (error: any) {
         console.error('Delete error:', error);

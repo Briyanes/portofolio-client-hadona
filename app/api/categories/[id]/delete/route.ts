@@ -45,7 +45,7 @@ export async function POST(
 
     // Revalidate the categories page
     revalidatePath('/admin/categories');
-    revalidatePath('/admin/categories/[id]');
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

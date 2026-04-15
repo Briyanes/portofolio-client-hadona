@@ -141,6 +141,7 @@ export async function DELETE(
     // Revalidate paths
     const { revalidatePath } = await import('next/cache');
     revalidatePath('/admin/case-studies');
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
