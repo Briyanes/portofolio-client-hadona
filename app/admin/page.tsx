@@ -1,4 +1,4 @@
-import { getPublishedCaseStudies, adminGetDashboardCounts } from '@/lib/supabase-queries';
+import { adminGetAllCaseStudies, adminGetDashboardCounts } from '@/lib/supabase-queries';
 import { StatCard } from '@/components/admin/dashboard/StatCard';
 import { AdminCaseStudyCard } from '@/components/admin/case-studies/AdminCaseStudyCard';
 import AdminProtectedLayout from '@/components/admin/AdminProtectedLayout';
@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
 
   try {
     const [studies, dashboardCounts] = await Promise.all([
-      getPublishedCaseStudies(),
+      adminGetAllCaseStudies(),
       adminGetDashboardCounts(),
     ]);
     caseStudies = studies || [];
@@ -114,6 +114,27 @@ export default async function AdminDashboardPage() {
           >
             <i className="bi bi-plus-lg text-xl"></i>
             <span className="font-semibold">New Case Study</span>
+          </a>
+          <a
+            href="/admin/testimonials/new"
+            className="flex items-center gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+          >
+            <i className="bi bi-chat-quote text-xl"></i>
+            <span className="font-semibold">New Testimonial</span>
+          </a>
+          <a
+            href="/admin/client-logos/new"
+            className="flex items-center gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+          >
+            <i className="bi bi-badge-ad text-xl"></i>
+            <span className="font-semibold">Upload Client Logo</span>
+          </a>
+          <a
+            href="/admin/video-embeds/new"
+            className="flex items-center gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+          >
+            <i className="bi bi-play-circle text-xl"></i>
+            <span className="font-semibold">Add Video Embed</span>
           </a>
           <a
             href="/admin/categories"
