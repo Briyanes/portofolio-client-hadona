@@ -470,25 +470,31 @@ export function CaseStudyForm({
           <span className="w-8 h-8 rounded-lg bg-hadona-primary/10 flex items-center justify-center text-hadona-primary text-sm font-bold">8</span>
           Publishing
         </h2>
-        <div className="space-y-3">
-          <label className="flex items-center gap-2">
+        <div className="space-y-4">
+          <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-hadona-primary/30 transition-colors cursor-pointer">
+            <input
+              type="checkbox"
+              name="is_published"
+              defaultChecked={initialData?.is_published ?? true}
+              className="w-5 h-5 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
+            />
+            <div>
+              <span className="text-sm font-bold text-gray-900">Publish</span>
+              <p className="text-xs text-gray-500">Tampilkan di website publik & homepage</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-hadona-primary/30 transition-colors cursor-pointer">
             <input
               type="checkbox"
               name="is_featured"
               defaultChecked={initialData?.is_featured}
-              className="w-4 h-4 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
+              className="w-5 h-5 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
             />
-            <span className="text-sm font-medium text-gray-700">Tampilkan di Homepage (Featured)</span>
-          </label>
-
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="is_published"
-              defaultChecked={initialData?.is_published}
-              className="w-4 h-4 text-hadona-primary border-gray-300 rounded focus:ring-hadona-primary"
-            />
-            <span className="text-sm font-medium text-gray-700">Publish (Tampilkan di website publik)</span>
+            <div>
+              <span className="text-sm font-bold text-gray-900">Featured</span>
+              <p className="text-xs text-gray-500">Tandai sebagai studi kasus unggulan</p>
+            </div>
           </label>
         </div>
       </div>
