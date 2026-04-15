@@ -9,7 +9,20 @@ export async function getPublishedCaseStudies(filters: CaseStudyFilters = {}) {
     .eq('is_published', true);
 
   if (filters.category) {
-    query = query.eq('categories.slug', filters.category);
+    // Look up category ID by slug first, then filter by category_id
+    const { data: cat } = await supabaseAdmin
+      .from('categories')
+      .select('id')
+      .eq('slug', filters.category)
+      .eq('is_active', true)
+      .single();
+
+    if (cat) {
+      query = query.eq('category_id', cat.id);
+    } else {
+      // Category not found — return empty
+      return [] as CaseStudy[];
+    }
   }
 
   if (filters.search) {
