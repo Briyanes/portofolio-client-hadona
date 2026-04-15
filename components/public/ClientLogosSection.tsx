@@ -81,7 +81,7 @@ export function ClientLogosSection({
         {/* Slider Track */}
         <div
           ref={sliderRef}
-          className={`flex items-center gap-8 md:gap-12 animate-scroll slider-track ${
+          className={`flex items-center gap-8 md:gap-12 w-max animate-scroll slider-track ${
             isPaused ? 'pause-animation' : ''
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
@@ -90,7 +90,6 @@ export function ClientLogosSection({
           onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {duplicatedClients.map((client, index) => {
             // Convert relative path to absolute URL if needed

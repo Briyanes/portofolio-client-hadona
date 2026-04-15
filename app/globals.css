@@ -883,25 +883,14 @@ a {
   will-change: transform;
 }
 
-/* Smooth scrolling for drag functionality */
+/* Smooth interaction for slider track */
 .slider-track {
   cursor: grab;
   user-select: none;
-  -webkit-overflow-scrolling: touch;
 }
 
 .slider-track:active {
   cursor: grabbing;
-}
-
-/* Hide scrollbar for sliders */
-.slider-track::-webkit-scrollbar {
-  display: none;
-}
-
-.slider-track {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 /* Hide scrollbar for horizontal scroll elements */

@@ -134,7 +134,7 @@ export function VideoEmbedsSection({
         {/* Slider Track */}
         <div
           ref={sliderRef}
-          className={`flex gap-4 md:gap-6 animate-scroll-video slider-track ${
+          className={`flex gap-4 md:gap-6 w-max animate-scroll-video slider-track ${
             isPaused ? 'pause-animation' : ''
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
@@ -143,7 +143,6 @@ export function VideoEmbedsSection({
           onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {duplicatedVideos.map((video, index) => (
             <div

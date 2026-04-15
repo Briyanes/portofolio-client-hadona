@@ -105,7 +105,7 @@ export function TestimonialsSection({
         {/* Slider Track */}
         <div
           ref={sliderRef}
-          className={`flex gap-6 md:gap-8 animate-scroll-testimonial slider-track ${
+          className={`flex gap-6 md:gap-8 w-max animate-scroll-testimonial slider-track ${
             isPaused ? 'pause-animation' : ''
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
@@ -114,7 +114,6 @@ export function TestimonialsSection({
           onMouseMove={handleMouseMove}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {duplicatedTestimonials.map((testimonial, index) => (
             <div
